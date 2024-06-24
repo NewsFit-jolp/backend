@@ -1,6 +1,6 @@
 package com.example.daycarat.global.jwt;
 
-import com.example.daycarat.domain.user.entity.User;
+import com.example.daycarat.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,17 +13,17 @@ public class SecurityService {
 
     private final TokenService tokenService;
 
-    public Authentication forceLogin(User user) {
-        UserDetails userDetails = new UserDetailsImpl(user);
+    public Authentication forceLogin(Member member) {
+        UserDetails userDetails = new MemberDetailsImpl(member);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }
 
     public TokenResponse usersAuthorizationInput(Authentication authentication) {
-        UserDetailsImpl userDetailsImpl = ((UserDetailsImpl) authentication.getPrincipal());
-        String accessToken = tokenService.createAccessToken(userDetailsImpl);
-        String refreshToken = tokenService.createRefreshToken(userDetailsImpl);
+        MemberDetailsImpl memberDetailsImpl = ((MemberDetailsImpl) authentication.getPrincipal());
+        String accessToken = tokenService.createAccessToken(memberDetailsImpl);
+        String refreshToken = tokenService.createRefreshToken(memberDetailsImpl);
 
         return new TokenResponse(accessToken, refreshToken);
     }

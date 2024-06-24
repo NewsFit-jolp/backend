@@ -1,9 +1,9 @@
-package com.example.daycarat.domain.user.api;
+package com.example.daycarat.domain.member.api;
 
-import com.example.daycarat.domain.user.dto.GetUserInfo;
-import com.example.daycarat.domain.user.service.UserService;
+import com.example.daycarat.domain.member.dto.GetMemberInfo;
+import com.example.daycarat.domain.member.service.MemberService;
 import com.example.daycarat.global.jwt.TokenResponse;
-import com.example.daycarat.global.oauth.KakaoUserService;
+import com.example.daycarat.global.oauth.KakaoMemberService;
 import com.example.daycarat.global.response.SuccessResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,13 +14,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.*;
 
 
-@Tag(name = "User", description = "유저 관련 API")
+@Tag(name = "Member", description = "유저 관련 API")
 @RestController @RequestMapping("/user")
 @RequiredArgsConstructor
-public class UserController {
+public class MemberController {
 
-    private final UserService userService;
-    private final KakaoUserService kakaoUserService;
+    private final MemberService memberService;
+    private final KakaoMemberService kakaoMemberService;
 
     @Operation(summary = "카카오 액세스 토큰으로 내부 토큰 발급하기",
             description = """
@@ -39,10 +39,11 @@ public class UserController {
                     - accessToken: 서버 내부에서 발급한 토큰입니다.
                     - refreshToken: 서버 내부에서 발급한 토큰입니다.
                     """)
+
     @GetMapping("/oauth/kakao")
     public SuccessResponse<TokenResponse> kakaoLogin(@Parameter(name = "accessToken", description = "카카오 인증서버에서 받은 토큰", required = true)
                                         @RequestParam String accessToken) throws JsonProcessingException {
-        Pair<TokenResponse, Boolean> pair = kakaoUserService.kakaoLogin(accessToken);
+        Pair<TokenResponse, Boolean> pair = kakaoMemberService.kakaoLogin(accessToken);
 
         if (pair.getRight()) {
             return SuccessResponse.createSuccess(pair.getLeft());
@@ -56,8 +57,8 @@ public class UserController {
                     유저 정보를 조회합니다.
                     """)
     @GetMapping("/userInfo")
-    public SuccessResponse<GetUserInfo> getUserInfo() {
-        return SuccessResponse.success(userService.getUserInfo());
+    public SuccessResponse<GetMemberInfo> getUserInfo() {
+        return SuccessResponse.success(memberService.getUserInfo());
     }
 
     @Operation(summary = "(개발용) 유저 삭제하기",
@@ -73,7 +74,7 @@ public class UserController {
                     """)
     @DeleteMapping("/delete")
     public SuccessResponse<Boolean> deleteUser() {
-        return SuccessResponse.success(userService.deleteUser());
+        return SuccessResponse.success(memberService.deleteUser());
     }
 
 }
