@@ -30,11 +30,11 @@ public class SecurityConfig {
     };
 
     private final String[] securityPatterns = {
-            "/user/oauth/kakao", "/user/oauth/apple"
+            "/member/oauth/kakao", "/member/oauth/apple"
     };
 
-    private final String[] UserPatterns = {
-            "/user/**"
+    private final String[] MemberPatterns = {
+            "/member/**"
     };
 
 
@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(SwaggerPatterns).permitAll()
                         .requestMatchers(BasicPatterns).permitAll()
                         .requestMatchers(securityPatterns).permitAll()
-                        .requestMatchers(UserPatterns).authenticated()
+                        .requestMatchers(MemberPatterns).authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)

@@ -1,8 +1,8 @@
-package com.example.daycarat.domain.user.service;
+package com.example.daycarat.domain.member.service;
 
-import com.example.daycarat.domain.user.dto.GetUserInfo;
-import com.example.daycarat.domain.user.entity.User;
-import com.example.daycarat.domain.user.repository.UserRepository;
+import com.example.daycarat.domain.member.dto.GetMemberInfo;
+import com.example.daycarat.domain.member.entity.Member;
+import com.example.daycarat.domain.member.repository.MemberRepository;
 import com.example.daycarat.global.error.exception.CustomException;
 import com.example.daycarat.global.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -12,25 +12,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service @RequiredArgsConstructor
-public class UserService {
+public class MemberService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    public GetUserInfo getUserInfo() {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    public GetMemberInfo getUserInfo() {
+        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return GetUserInfo.of(user);
+        return GetMemberInfo.of(member);
     }
 
     @Transactional
     public Boolean deleteUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        userRepository.delete(user);
+        memberRepository.delete(member);
 
         return true;
     }

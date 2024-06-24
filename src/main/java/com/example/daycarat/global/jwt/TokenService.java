@@ -1,8 +1,8 @@
 package com.example.daycarat.global.jwt;
 
-import com.example.daycarat.domain.user.entity.Role;
-import com.example.daycarat.domain.user.entity.User;
-import com.example.daycarat.domain.user.repository.UserRepository;
+import com.example.daycarat.domain.member.entity.Role;
+import com.example.daycarat.domain.member.entity.Member;
+import com.example.daycarat.domain.member.repository.MemberRepository;
 import com.example.daycarat.global.error.exception.CustomException;
 import com.example.daycarat.global.error.exception.ErrorCode;
 import io.jsonwebtoken.*;
@@ -24,8 +24,8 @@ public class TokenService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private final JpaUserDetailsService userDetailsService;
-    private final UserRepository userRepository;
+    private final JpaMemberDetailsService userDetailsService;
+    private final MemberRepository memberRepository;
 
     @PostConstruct
     protected void init() {
@@ -34,13 +34,13 @@ public class TokenService {
 
 
     // access 토큰 생성
-    public String createAccessToken(UserDetailsImpl userDetailsImpl) {
-        return createToken(userDetailsImpl.user().getEmail(), userDetailsImpl.user().getRole(), 8640000000L);
+    public String createAccessToken(MemberDetailsImpl memberDetailsImpl) {
+        return createToken(memberDetailsImpl.member().getEmail(), memberDetailsImpl.member().getRole(), 8640000000L);
     }
 
     // refresh 토큰 생성
-    public String createRefreshToken(UserDetailsImpl userDetailsImpl) {
-        return createToken(userDetailsImpl.user().getEmail(), userDetailsImpl.user().getRole(), 8640000000L);
+    public String createRefreshToken(MemberDetailsImpl memberDetailsImpl) {
+        return createToken(memberDetailsImpl.member().getEmail(), memberDetailsImpl.member().getRole(), 8640000000L);
     }
 
     // 토큰 생성
@@ -72,12 +72,12 @@ public class TokenService {
         호출: RequestHeader("Authorization")의 String token을 그대로(Bearer 안떼고) 넣는다
         반환: 해당 Member 객체를 반환한다.
      */
-    public User getUser(String token) {
+    public Member getUser(String token) {
         // 토큰으로부터 이메일을 얻음
         token = token.split(" ")[1].trim();
         String email = getEmail(token);
         // 이메일로 멤버 인스턴스를 얻음
-        return userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // Authorization Header를 통해 인증을 한다.

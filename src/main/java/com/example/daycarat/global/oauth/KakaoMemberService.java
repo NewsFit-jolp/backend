@@ -1,9 +1,9 @@
 package com.example.daycarat.global.oauth;
 
-import com.example.daycarat.domain.user.dto.KakaoUserDto;
-import com.example.daycarat.domain.user.entity.Role;
-import com.example.daycarat.domain.user.entity.User;
-import com.example.daycarat.domain.user.repository.UserRepository;
+import com.example.daycarat.domain.member.dto.KakaoMemberDto;
+import com.example.daycarat.domain.member.entity.Member;
+import com.example.daycarat.domain.member.entity.Role;
+import com.example.daycarat.domain.member.repository.MemberRepository;
 import com.example.daycarat.global.jwt.SecurityService;
 import com.example.daycarat.global.jwt.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,21 +23,21 @@ import org.springframework.web.client.RestTemplate;
 import java.util.UUID;
 
 @Service @RequiredArgsConstructor
-public class KakaoUserService {
+public class KakaoMemberService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final SecurityService securityService;
 
-    @Value("${oauth.kakao.client-id}")
-    private String clientId;
-    @Value("${oauth.kakao.client-secret}")
-    private String clientSecret;
+//    @Value("${oauth.kakao.client-id}")
+//    private String clientId;
+//    @Value("${oauth.kakao.client-secret}")
+//    private String clientSecret;
 
     public Pair<TokenResponse, Boolean> kakaoLogin(String accessToken) throws JsonProcessingException {
 
-        KakaoUserDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        KakaoMemberDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-        Pair<User, Boolean> kakaoUser = registerKakaoUserIfNeed(kakaoUserInfo);
+        Pair<Member, Boolean> kakaoUser = registerKakaoUserIfNeed(kakaoUserInfo);
 
         Authentication authentication = securityService.forceLogin(kakaoUser.getLeft());
 
@@ -46,7 +45,7 @@ public class KakaoUserService {
 
     }
 
-    private KakaoUserDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    private KakaoMemberDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -65,7 +64,7 @@ public class KakaoUserService {
         return handleKakaoResponse(response.getBody());
     }
 
-    private KakaoUserDto handleKakaoResponse(String responseBody) throws JsonProcessingException {
+    private KakaoMemberDto handleKakaoResponse(String responseBody) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
@@ -77,20 +76,20 @@ public class KakaoUserService {
 
         String thumbnailImage = jsonNode.get("kakao_account").get("profile").get("thumbnail_image_url").asText();
 
-        return KakaoUserDto.of(email, nickname, thumbnailImage);
+        return KakaoMemberDto.of(email, nickname, thumbnailImage);
     }
 
-    private Pair<User, Boolean> registerKakaoUserIfNeed (KakaoUserDto kakaoUserInfo) {
+    private Pair<Member, Boolean> registerKakaoUserIfNeed (KakaoMemberDto kakaoUserInfo) {
 
         String kakaoEmail = kakaoUserInfo.getEmail();
-        User kakaoUser = userRepository.findByEmail(kakaoEmail)
+        Member kakaoMember = memberRepository.findByEmail(kakaoEmail)
                 .orElse(null);
 
-        if (kakaoUser == null) {
+        if (kakaoMember == null) {
 
             String password = UUID.randomUUID().toString();
 
-            kakaoUser = User.builder()
+            kakaoMember = Member.builder()
                     .email(kakaoEmail)
                     .nickname(kakaoUserInfo.getNickname())
                     .profileImage(kakaoUserInfo.getProfileImage())
@@ -98,11 +97,11 @@ public class KakaoUserService {
                     .password(password)
                     .build();
 
-            userRepository.save(kakaoUser);
+            memberRepository.save(kakaoMember);
 
-            return Pair.of(kakaoUser, true);
+            return Pair.of(kakaoMember, true);
 
         }
-        return Pair.of(kakaoUser, false);
+        return Pair.of(kakaoMember, false);
     }
 }
