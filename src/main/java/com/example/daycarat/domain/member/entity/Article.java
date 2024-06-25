@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -25,8 +26,8 @@ public class Article extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Categories category;
 
-    @OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "article_id", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Article(String title, String content, String press,

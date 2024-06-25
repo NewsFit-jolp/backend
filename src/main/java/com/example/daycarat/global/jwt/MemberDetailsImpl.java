@@ -21,7 +21,7 @@ public record MemberDetailsImpl(Member member) implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return null;
     }
 
     @Override
