@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.SpringApplication;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -18,10 +21,14 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long comment_id;
 
-    private Long article_id;
     private String content;
-    private Long member_id;
-    private Long parent_comment_id;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
+    private List<Comment> childrenComment = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "article_id")
@@ -32,10 +39,7 @@ public class Comment extends BaseEntity {
     private Member member;
 
     @Builder
-    public Comment(Long article_id, String content, Long member_id, Long parent_comment_id) {
-        this.article_id = article_id;
+    public Comment(String content) {
         this.content = content;
-        this.member_id = member_id;
-        this.parent_comment_id = parent_comment_id;
     }
 }

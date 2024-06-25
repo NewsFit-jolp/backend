@@ -94,7 +94,6 @@ public class KakaoMemberService {
                     .nickname(kakaoUserInfo.getNickname())
                     .profileImage(kakaoUserInfo.getProfileImage())
                     .role(Role.USER)
-                    .password(password)
                     .build();
 
             memberRepository.save(kakaoMember);
