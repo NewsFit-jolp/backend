@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.SpringApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +23,18 @@ public class Comment extends BaseEntity {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent")
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
     private List<Comment> childrenComment = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "article_id")
+    @JoinColumn(name = "article")
     private Article article;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member")
     private Member member;
 
     @Builder
