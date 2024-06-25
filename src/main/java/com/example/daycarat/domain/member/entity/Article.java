@@ -26,7 +26,7 @@ public class Article extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Categories category;
 
-    @OneToMany(mappedBy = "article_id", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
