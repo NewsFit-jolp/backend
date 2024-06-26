@@ -22,7 +22,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -76,9 +75,8 @@ public class KakaoMemberService {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode kakaoResponse = mapper.readTree(response.getBody());
-        String accessToken = kakaoResponse.get("access_token").asText();
 
-        return accessToken;
+        return kakaoResponse.get("access_token").asText();
     }
 
     private KakaoMemberDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
