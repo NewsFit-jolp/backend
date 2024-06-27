@@ -7,28 +7,28 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class KakaoMemberDto {
+public class MemberDto {
     private String email;
     private String nickname;
     private String profileImage;
 
     @Builder
-    public KakaoMemberDto(String email, String nickname, String profileImage) {
+    public MemberDto(String email, String nickname, String profileImage) {
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
     }
 
-    public static KakaoMemberDto of(Member member) {
-        return KakaoMemberDto.builder()
+    public static MemberDto of(Member member) {
+        return MemberDto.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .profileImage(member.getProfileImage())
                 .build();
     }
 
-    public static KakaoMemberDto of(String email, String nickname, String profileImage) {
-        return KakaoMemberDto.builder()
+    public static MemberDto of(String email, String nickname, String profileImage) {
+        return MemberDto.builder()
                 .email(email)
                 .nickname(nickname)
                 .profileImage(profileImage)

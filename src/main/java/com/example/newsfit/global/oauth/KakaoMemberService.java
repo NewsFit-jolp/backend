@@ -1,9 +1,11 @@
 package com.example.newsfit.global.oauth;
 
-import com.example.newsfit.domain.member.dto.KakaoMemberDto;
+import com.amazonaws.services.dynamodbv2.xspec.M;
+import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
+import com.example.newsfit.domain.member.service.MemberService;
 import com.example.newsfit.global.jwt.SecurityService;
 import com.example.newsfit.global.jwt.TokenResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,12 +24,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.sound.midi.MetaMessage;
+
 
 @Service
 @RequiredArgsConstructor
 public class KakaoMemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final SecurityService securityService;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
@@ -39,14 +44,13 @@ public class KakaoMemberService {
 
     public Pair<TokenResponse, Boolean> kakaoLogin(String accessToken) throws JsonProcessingException {
 
-        KakaoMemberDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        MemberDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-        Pair<Member, Boolean> kakaoUser = registerKakaoUserIfNeed(kakaoUserInfo);
+        Pair<Member, Boolean> kakaoMember = memberService.registerMemberIfNeed(kakaoUserInfo);
 
-        Authentication authentication = securityService.forceLogin(kakaoUser.getLeft());
+        Authentication authentication = securityService.forceLogin(kakaoMember.getLeft());
 
-        return Pair.of(securityService.usersAuthorizationInput(authentication), kakaoUser.getRight());
-
+        return Pair.of(securityService.usersAuthorizationInput(authentication), kakaoMember.getRight());
     }
 
 
@@ -79,7 +83,7 @@ public class KakaoMemberService {
         return kakaoResponse.get("access_token").asText();
     }
 
-    private KakaoMemberDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    private MemberDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
@@ -98,7 +102,7 @@ public class KakaoMemberService {
         return handleKakaoResponse(response.getBody());
     }
 
-    private KakaoMemberDto handleKakaoResponse(String responseBody) throws JsonProcessingException {
+    private MemberDto handleKakaoResponse(String responseBody) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
@@ -110,29 +114,7 @@ public class KakaoMemberService {
 
         String thumbnailImage = jsonNode.get("kakao_account").get("profile").get("thumbnail_image_url").asText();
 
-        return KakaoMemberDto.of(email, nickname, thumbnailImage);
+        return MemberDto.of(email, nickname, thumbnailImage);
     }
 
-    private Pair<Member, Boolean> registerKakaoUserIfNeed(KakaoMemberDto kakaoUserInfo) {
-
-        String kakaoEmail = kakaoUserInfo.getEmail();
-        Member kakaoMember = memberRepository.findByEmail(kakaoEmail)
-                .orElse(null);
-
-        if (kakaoMember == null) {
-
-            kakaoMember = Member.builder()
-                    .email(kakaoEmail)
-                    .nickname(kakaoUserInfo.getNickname())
-                    .profileImage(kakaoUserInfo.getProfileImage())
-                    .role(Role.USER)
-                    .build();
-
-            memberRepository.save(kakaoMember);
-
-            return Pair.of(kakaoMember, true);
-
-        }
-        return Pair.of(kakaoMember, false);
-    }
 }
