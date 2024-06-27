@@ -1,9 +1,7 @@
 package com.example.newsfit.global.oauth;
 
-import com.amazonaws.services.dynamodbv2.xspec.M;
 import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Member;
-import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.domain.member.service.MemberService;
 import com.example.newsfit.global.jwt.SecurityService;
@@ -24,14 +22,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.sound.midi.MetaMessage;
 
 
 @Service
 @RequiredArgsConstructor
 public class KakaoMemberService {
 
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final SecurityService securityService;
 
