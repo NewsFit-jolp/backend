@@ -106,7 +106,7 @@ public class KakaoMemberService {
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
 
-        String email = jsonNode.get("kakao_account").get("email").asText();
+        String email = "kakao " + jsonNode.get("kakao_account").get("email").asText();
 
         String thumbnailImage = jsonNode.get("kakao_account").get("profile").get("thumbnail_image_url").asText();
 

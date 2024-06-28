@@ -93,9 +93,9 @@ public class MemberController {
         }
     }
 
-    @Operation(summary = "구글 인증 서버를 통한 로그인",
+    @Operation(summary = "네이버 인증 서버를 통한 로그인",
             description = """
-                    구글 인증 서버를 통해 로그인합니다.
+                    네이버 인증 서버를 통해 로그인합니다.
                                         
                     **상태 코드에 따라 최초 회원가입, 기존 유저 로그인 여부를 알 수 있습니다.**
                     - statusCode가 200인 경우: 기존 유저 로그인
@@ -104,7 +104,7 @@ public class MemberController {
                     개발용 유저 삭제 API를 통해 최초 회원가입이 정상적으로 처리되는지 확인할 수 있습니다.
                                       
                     요청값:
-                    - (Query Parameter) code: 구글 인증서버에서 받은 인증 코드값입니다.
+                    - (Query Parameter) code: 네이버 인증서버에서 받은 인증 코드값입니다.
                                         
                     반환값:
                     - accessToken: 서버 내부에서 발급한 토큰입니다.
@@ -132,7 +132,7 @@ public class MemberController {
             description = """
                     유저 정보를 조회합니다.
                     """)
-    @GetMapping("/userInfo")
+    @GetMapping("/info")
     public SuccessResponse<GetMemberInfo> getUserInfo() {
         return SuccessResponse.success(memberService.getUserInfo());
     }
