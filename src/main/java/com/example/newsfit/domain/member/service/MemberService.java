@@ -47,6 +47,8 @@ public class MemberService {
         Member member = memberRepository.findByEmail(memberEmail)
                 .orElse(null);
 
+        System.out.println(member);
+
         if (member == null) {
 
             member = Member.builder()

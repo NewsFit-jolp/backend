@@ -74,8 +74,6 @@ public class GoogleMemberService {
 
         Pair<Member, Boolean> googleMember = memberService.registerMemberIfNeed(googleUserInfo);
 
-        System.out.println(googleMember);
-
         Authentication authentication = securityService.forceLogin(googleMember.getLeft());
 
         return Pair.of(securityService.usersAuthorizationInput(authentication), googleMember.getRight());
@@ -106,7 +104,7 @@ public class GoogleMemberService {
 
         String nickname = jsonNode.get("name").asText();
 
-        String email = jsonNode.get("email").asText();
+        String email = "google " + jsonNode.get("email").asText();
 
         String thumbnailImage = jsonNode.get("picture").asText();
 
