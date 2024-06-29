@@ -44,8 +44,8 @@ public class TokenService {
     }
 
     // 토큰 생성
-    private String createToken(String email, Role role, Long expirationTime) {
-        Claims claims = Jwts.claims().setSubject(email);
+    private String createToken(Long memberId, Role role, Long expirationTime) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
         claims.put("role", role);
         Date now = new Date();
         return Jwts.builder()
@@ -59,12 +59,12 @@ public class TokenService {
     // 권한정보 획득
     // Spring Security 인증과정에서 권한확인을 위한 기능
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getEmail(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getMemberId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // 토큰에 담겨있는 유저 userId 획득
-    public String getEmail(String token) {
+    public String getMemberId(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
@@ -75,9 +75,9 @@ public class TokenService {
     public Member getMember(String token) {
         // 토큰으로부터 이메일을 얻음
         token = token.split(" ")[1].trim();
-        String email = getEmail(token);
+        String memberId = getMemberId(token);
         // 이메일로 멤버 인스턴스를 얻음
-        return memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return memberRepository.findByMemberId(Long.parseLong(memberId)).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // Authorization Header를 통해 인증을 한다.

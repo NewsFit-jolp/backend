@@ -50,6 +50,7 @@ public class MemberController {
     @GetMapping("/oauth/kakao")
     public SuccessResponse<TokenResponse> kakaoLogin(@Parameter(name = "code", description = "카카오 인증서버에서 받은 인증 코드", required = true)
                                                      @RequestParam String code) throws JsonProcessingException {
+
         String accessToken = kakaoMemberService.getAccessToken(code);
 
         Pair<TokenResponse, Boolean> pair = kakaoMemberService.kakaoLogin(accessToken);
