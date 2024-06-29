@@ -2,7 +2,6 @@ package com.example.newsfit.global.oauth;
 
 import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Member;
-import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.domain.member.service.MemberService;
 import com.example.newsfit.global.jwt.SecurityService;
 import com.example.newsfit.global.jwt.TokenResponse;
@@ -32,8 +31,6 @@ public class KakaoMemberService {
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
-    private String clientSecret;
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String kakaoRedirectUri;
 
