@@ -12,13 +12,13 @@ import static com.example.newsfit.global.error.exception.ErrorCode.USER_NOT_FOUN
 
 @Service
 @RequiredArgsConstructor
-public class JpaMemberDetailsService implements UserDetailsService {
+public class JpaMemberDetailsService implements UserDetailsService{
 
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(
+    public UserDetails loadUserByUsername(String memberId) {
+        Member member = memberRepository.findByMemberId(Long.parseLong(memberId)).orElseThrow(
                 () -> new CustomException(USER_NOT_FOUND)
         );
 

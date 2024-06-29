@@ -37,7 +37,7 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;
 
-    public final NumberPath<Long> member_id = createNumber("member_id", Long.class);
+    public final NumberPath<Long> memberId = createNumber("memberId", Long.class);
 
     public final StringPath nickname = createString("nickname");
 
