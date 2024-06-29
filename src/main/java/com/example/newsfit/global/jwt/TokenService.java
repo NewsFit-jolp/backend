@@ -73,7 +73,7 @@ public class TokenService {
         반환: 해당 Member 객체를 반환한다.
      */
     public Member getMember(String token) {
-        // 토큰으로부터 이메일을 얻음
+        // 토큰으로부터 memberId를 얻음
         token = token.split(" ")[1].trim();
         String memberId = getMemberId(token);
         // 이메일로 멤버 인스턴스를 얻음
