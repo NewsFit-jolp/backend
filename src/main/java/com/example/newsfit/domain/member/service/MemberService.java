@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
-import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -31,12 +30,10 @@ import java.util.Date;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final EntityManagerFactory emf;
     private final EntityManager em;
 
     public MemberService(MemberRepository memberRepository, EntityManagerFactory emf) {
         this.memberRepository = memberRepository;
-        this.emf = emf;
         this.em = emf.createEntityManager();
     }
 
@@ -47,7 +44,7 @@ public class MemberService {
         return GetMemberInfo.of(member);
     }
 
-    public GetMemberInfo putUserInfo(String requestBody) throws JsonProcessingException, ParseException, java.text.ParseException {
+    public GetMemberInfo putUserInfo(String requestBody) throws  ParseException, java.text.ParseException {
         Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
