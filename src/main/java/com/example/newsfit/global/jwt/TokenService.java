@@ -35,12 +35,12 @@ public class TokenService {
 
     // access 토큰 생성
     public String createAccessToken(MemberDetailsImpl memberDetailsImpl) {
-        return createToken(memberDetailsImpl.member().getEmail(), memberDetailsImpl.member().getRole(), 8640000000L);
+        return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 8640000000L);
     }
 
     // refresh 토큰 생성
     public String createRefreshToken(MemberDetailsImpl memberDetailsImpl) {
-        return createToken(memberDetailsImpl.member().getEmail(), memberDetailsImpl.member().getRole(), 8640000000L);
+        return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 8640000000L);
     }
 
     // 토큰 생성
