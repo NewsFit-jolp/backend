@@ -8,7 +8,6 @@ import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -51,7 +50,7 @@ public class MemberService {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
 
-        Member putMember = em.find(Member.class, member.getMember_id());
+        Member putMember = em.find(Member.class, member.getMemberId());
 
         JSONParser parser = new JSONParser();
         Object parsedBody = parser.parse(requestBody);

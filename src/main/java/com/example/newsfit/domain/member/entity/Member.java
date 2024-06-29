@@ -17,7 +17,7 @@ import java.util.List;
 public class Member extends BaseEntity {
 
     @Id
-    private String member_id;
+    private String memberId;
 
     private String nickname;
     private String email;
@@ -35,9 +35,9 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Builder
-    public Member(String member_id, String email, String phone, String profileImage,
+    public Member(String memberId, String email, String phone, String profileImage,
                   String nickname, Date birth, Role role, Gender gender) {
-        this.member_id = member_id;
+        this.memberId = memberId;
         this.email = email;
         this.phone = phone;
         this.nickname = nickname;
