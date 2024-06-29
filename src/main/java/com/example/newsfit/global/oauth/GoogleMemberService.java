@@ -22,7 +22,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class GoogleMemberService {
@@ -104,7 +103,7 @@ public class GoogleMemberService {
 
         String nickname = jsonNode.get("name").asText();
 
-        String email = "google " + jsonNode.get("email").asText();
+        String email = jsonNode.get("email").asText();
 
         String thumbnailImage = jsonNode.get("picture").asText();
 

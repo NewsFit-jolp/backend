@@ -104,7 +104,7 @@ public class NaverMemberService {
         String nickname = jsonNode.get("response")
                 .get("nickname").asText();
 
-        String email = "naver " + jsonNode.get("response").get("email").asText();
+        String email = jsonNode.get("response").get("email").asText();
 
         String thumbnailImage = jsonNode.get("response").get("profile_image").asText();
 

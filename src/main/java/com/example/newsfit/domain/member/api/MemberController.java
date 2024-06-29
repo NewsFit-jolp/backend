@@ -11,7 +11,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.*;
 
@@ -135,6 +137,15 @@ public class MemberController {
     @GetMapping("/info")
     public SuccessResponse<GetMemberInfo> getUserInfo() {
         return SuccessResponse.success(memberService.getUserInfo());
+    }
+
+    @Operation(summary = "유저 정보 수정하기",
+            description = """
+                    유저 정보를 수정합니다.
+                    """)
+    @PutMapping("/info")
+    public SuccessResponse<GetMemberInfo> putUserInfo(@RequestBody String requestBody) throws ParseException, JsonProcessingException, java.text.ParseException {
+        return SuccessResponse.success(memberService.putUserInfo(requestBody));
     }
 
     @Operation(summary = "(개발용) 유저 삭제하기",
