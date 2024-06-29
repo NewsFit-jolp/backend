@@ -68,6 +68,8 @@ public class MemberService {
         JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
 
         putMember.putMember(name, email, phone, birth, gender);
+        putMember.putCategories(preferredCategories);
+        putMember.putPress(preferredPress);
         transaction.commit();
 
         return GetMemberInfo.of(putMember);

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.minidev.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,10 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private List<Categories> preferredCategories;
 
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private List<Press> preferredPress;
+
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -62,4 +67,19 @@ public class Member extends BaseEntity {
         return this;
     }
 
+    public Member putCategories(JSONArray categories) {
+        preferredCategories = new ArrayList<>();
+        for (Object category : categories) {
+            preferredCategories.add(Categories.valueOf((String) category));
+        }
+        return this;
+    }
+
+    public Member putPress(JSONArray presses) {
+        preferredPress = new ArrayList<>();
+        for (Object press : presses) {
+            preferredPress.add(Press.valueOf((String) press));
+        }
+        return this;
+    }
 }

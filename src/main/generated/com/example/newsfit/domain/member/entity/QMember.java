@@ -45,6 +45,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<Categories, EnumPath<Categories>> preferredCategories = this.<Categories, EnumPath<Categories>>createList("preferredCategories", Categories.class, EnumPath.class, PathInits.DIRECT2);
 
+    public final ListPath<Press, EnumPath<Press>> preferredPress = this.<Press, EnumPath<Press>>createList("preferredPress", Press.class, EnumPath.class, PathInits.DIRECT2);
+
     public final StringPath profileImage = createString("profileImage");
 
     public final EnumPath<Role> role = createEnum("role", Role.class);
