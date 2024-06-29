@@ -29,6 +29,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath email = createString("email");
 
+    public final EnumPath<Gender> gender = createEnum("gender", Gender.class);
+
     //inherited
     public final BooleanPath isDeleted = _super.isDeleted;
 

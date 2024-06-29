@@ -23,7 +23,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class KakaoMemberService {
@@ -106,7 +105,7 @@ public class KakaoMemberService {
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
 
-        String email = "kakao " + jsonNode.get("kakao_account").get("email").asText();
+        String email = jsonNode.get("kakao_account").get("email").asText();
 
         String thumbnailImage = jsonNode.get("kakao_account").get("profile").get("thumbnail_image_url").asText();
 
