@@ -18,8 +18,7 @@ import java.util.List;
 public class Member extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private String memberId;
 
     @Column(unique = true)
     private String nickname;
@@ -44,7 +43,7 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Builder
-    public Member(Long memberId, String email, String phone, String profileImage,
+    public Member(String memberId, String email, String phone, String profileImage,
                   String nickname, Date birth, Role role, Gender gender) {
         this.memberId = memberId;
         this.email = email;

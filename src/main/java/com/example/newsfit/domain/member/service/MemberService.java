@@ -1,5 +1,6 @@
 package com.example.newsfit.domain.member.service;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.example.newsfit.domain.member.dto.GetMemberInfo;
 import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Gender;
@@ -36,15 +37,15 @@ public class MemberService {
         this.em = emf.createEntityManager();
     }
 
-    public GetMemberInfo getUserInfo() {
-        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    public GetMemberInfo getMemberInfo() {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetMemberInfo.of(member);
     }
 
-    public GetMemberInfo putUserInfo(String requestBody) throws  ParseException, java.text.ParseException {
-        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    public GetMemberInfo putMemberInfo(String requestBody) throws  ParseException, java.text.ParseException {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         EntityTransaction transaction = em.getTransaction();
@@ -76,10 +77,20 @@ public class MemberService {
     }
 
     @Transactional
-    public Boolean deleteUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public Boolean deleteMember(){
+        String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return true;
+    }
+
+    @Transactional
+    public Boolean deleteUser() {
+        String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         memberRepository.delete(member);
@@ -89,16 +100,18 @@ public class MemberService {
 
     public Pair<Member, Boolean> registerMemberIfNeed(MemberDto MemberInfo) {
 
+        String memberId = MemberInfo.getMemberId();
         String memberEmail = MemberInfo.getEmail();
         String memberNickname = MemberInfo.getNickname();
         String memberProfileImage = MemberInfo.getProfileImage();
 
-        Member member = memberRepository.findByEmail(memberEmail)
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElse(null);
 
         if (member == null) {
 
             member = Member.builder()
+                    .memberId(memberId)
                     .email(memberEmail)
                     .nickname(memberNickname)
                     .profileImage(memberProfileImage)

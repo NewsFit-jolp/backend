@@ -18,7 +18,7 @@ public class JpaMemberDetailsService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String memberId) {
-        Member member = memberRepository.findByMemberId(Long.parseLong(memberId)).orElseThrow(
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
                 () -> new CustomException(USER_NOT_FOUND)
         );
 
