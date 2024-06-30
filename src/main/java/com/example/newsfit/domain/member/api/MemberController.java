@@ -144,7 +144,7 @@ public class MemberController {
                     유저 정보를 수정합니다.
                     """)
     @PutMapping("/info")
-    public SuccessResponse<GetMemberInfo> putMemberInfo(@RequestBody String requestBody) throws ParseException, JsonProcessingException, java.text.ParseException {
+    public SuccessResponse<GetMemberInfo> putMemberInfo(@RequestBody String requestBody) throws ParseException, java.text.ParseException {
         return SuccessResponse.success(memberService.putMemberInfo(requestBody));
     }
 
