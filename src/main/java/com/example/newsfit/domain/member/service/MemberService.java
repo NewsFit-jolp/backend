@@ -1,6 +1,5 @@
 package com.example.newsfit.domain.member.service;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.example.newsfit.domain.member.dto.GetMemberInfo;
 import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Gender;

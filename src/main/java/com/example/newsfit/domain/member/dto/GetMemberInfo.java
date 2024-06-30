@@ -2,10 +2,6 @@ package com.example.newsfit.domain.member.dto;
 
 import com.example.newsfit.domain.member.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 import java.util.Date;
 import java.util.List;
