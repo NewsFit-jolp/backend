@@ -152,7 +152,7 @@ public class MemberController {
     description = """
             회원 탈퇴를 진행합니다.
             """)
-    @DeleteMapping("/")
+    @DeleteMapping("/withdraw")
     public SuccessResponse<Boolean> deleteMember(){
         return SuccessResponse.success(memberService.deleteMember());
     }

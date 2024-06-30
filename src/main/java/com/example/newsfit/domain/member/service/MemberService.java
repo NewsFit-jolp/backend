@@ -11,6 +11,7 @@ import com.example.newsfit.global.error.exception.ErrorCode;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -26,15 +27,11 @@ import java.util.Date;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final EntityManager em;
 
-    public MemberService(MemberRepository memberRepository, EntityManagerFactory emf) {
-        this.memberRepository = memberRepository;
-        this.em = emf.createEntityManager();
-    }
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -43,14 +40,10 @@ public class MemberService {
         return GetMemberInfo.of(member);
     }
 
+    @Transactional
     public GetMemberInfo putMemberInfo(String requestBody) throws  ParseException, java.text.ParseException {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-
-        Member putMember = em.find(Member.class, member.getMemberId());
 
         JSONParser parser = new JSONParser();
         Object parsedBody = parser.parse(requestBody);
@@ -67,12 +60,11 @@ public class MemberService {
         JSONArray preferredCategories = (JSONArray) jsonObject.get("preferredCategories");
         JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
 
-        putMember.putMember(name, email, phone, birth, gender);
-        putMember.putCategories(preferredCategories);
-        putMember.putPress(preferredPress);
-        transaction.commit();
+        member.putMember(name, email, phone, birth, gender);
+        member.putCategories(preferredCategories);
+        member.putPress(preferredPress);
 
-        return GetMemberInfo.of(putMember);
+        return GetMemberInfo.of(member);
     }
 
     @Transactional
@@ -81,6 +73,8 @@ public class MemberService {
 
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        member.deleteMember();
 
         return true;
     }
