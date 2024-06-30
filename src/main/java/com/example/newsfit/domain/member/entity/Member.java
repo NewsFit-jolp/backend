@@ -81,4 +81,8 @@ public class Member extends BaseEntity {
         }
         return this;
     }
+
+    public void deleteMember(){
+        this.isDeleted = true;
+    }
 }
