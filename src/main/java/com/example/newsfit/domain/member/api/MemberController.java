@@ -135,8 +135,8 @@ public class MemberController {
                     유저 정보를 조회합니다.
                     """)
     @GetMapping("/info")
-    public SuccessResponse<GetMemberInfo> getUserInfo() {
-        return SuccessResponse.success(memberService.getUserInfo());
+    public SuccessResponse<GetMemberInfo> getMemberInfo() {
+        return SuccessResponse.success(memberService.getMemberInfo());
     }
 
     @Operation(summary = "유저 정보 수정하기",
@@ -144,8 +144,17 @@ public class MemberController {
                     유저 정보를 수정합니다.
                     """)
     @PutMapping("/info")
-    public SuccessResponse<GetMemberInfo> putUserInfo(@RequestBody String requestBody) throws ParseException, JsonProcessingException, java.text.ParseException {
-        return SuccessResponse.success(memberService.putUserInfo(requestBody));
+    public SuccessResponse<GetMemberInfo> putMemberInfo(@RequestBody String requestBody) throws ParseException, JsonProcessingException, java.text.ParseException {
+        return SuccessResponse.success(memberService.putMemberInfo(requestBody));
+    }
+
+    @Operation(summary = "유저 회원 탈퇴",
+    description = """
+            회원 탈퇴를 진행합니다.
+            """)
+    @DeleteMapping("/")
+    public SuccessResponse<Boolean> deleteMember(){
+        return SuccessResponse.success(memberService.deleteMember());
     }
 
     @Operation(summary = "(개발용) 유저 삭제하기",
