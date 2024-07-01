@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -102,7 +103,8 @@ public class TokenService {
 
             // 만료되었을 시 false
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return false;
         }
     }
