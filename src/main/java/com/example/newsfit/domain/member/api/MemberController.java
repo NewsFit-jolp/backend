@@ -160,7 +160,7 @@ public class MemberController {
             description = """
                     유저 선호 주제를 수정합니다.
                     """)
-    @PutMapping("/info/categories")
+    @PutMapping("/categories")
     public SuccessResponse<GetPreferredCategories> putPreferredCategories(@RequestBody String requestBody) throws ParseException {
         return SuccessResponse.success(memberService.putPreferredCategories(requestBody));
     }
@@ -169,7 +169,7 @@ public class MemberController {
             description = """
                     유저 선호 언론사를 수정합니다.
                     """)
-    @PutMapping("/info/press")
+    @PutMapping("/press")
     public SuccessResponse<GetPreferredPress> purPreferredPress(@RequestBody String requestBody) throws ParseException {
         return SuccessResponse.success(memberService.putPreferredPress(requestBody));
     }
