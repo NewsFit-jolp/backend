@@ -183,6 +183,25 @@ public class MemberController {
         return SuccessResponse.success(memberService.deleteMember());
     }
 
+
+    @Operation(summary = "유저 선호 주제 조회하기",
+    description = """
+            유저 선호 주제를 조회합니다.
+            """)
+    @GetMapping("/categories")
+    public SuccessResponse<GetPreferredCategories> getPreferredCategories(){
+        return SuccessResponse.success(memberService.getPreferredCategories());
+    }
+
+    @Operation(summary = "유저 선호 언론사 조회하기",
+            description = """
+            유저 선호 언론사를 조회합니다.
+            """)
+    @GetMapping("/press")
+    public SuccessResponse<GetPreferredPress> getPreferredPress(){
+        return SuccessResponse.success(memberService.getPreferredPress());
+    }
+
     @Operation(summary = "(개발용) 유저 삭제하기",
             description = """
                     개발용 API입니다. 로그인 한 유저를 삭제합니다.
