@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class TokenService {
     }
 
     // 토큰 생성
-    private String createToken(Long memberId, Role role, Long expirationTime) {
+    private String createToken(String memberId, Role role, Long expirationTime) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
         claims.put("role", role);
         Date now = new Date();
@@ -76,8 +77,8 @@ public class TokenService {
         // 토큰으로부터 memberId를 얻음
         token = token.split(" ")[1].trim();
         String memberId = getMemberId(token);
-        // 이메일로 멤버 인스턴스를 얻음
-        return memberRepository.findByMemberId(Long.parseLong(memberId)).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        // 프로바이더+이메일로 멤버 인스턴스를 얻음
+        return memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // Authorization Header를 통해 인증을 한다.
@@ -102,7 +103,8 @@ public class TokenService {
 
             // 만료되었을 시 false
             return !claims.getBody().getExpiration().before(new Date());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return false;
         }
     }

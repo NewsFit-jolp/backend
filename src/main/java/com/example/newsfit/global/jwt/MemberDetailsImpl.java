@@ -26,7 +26,7 @@ public record MemberDetailsImpl(Member member) implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return member.getMemberId();
     }
 
     @Override

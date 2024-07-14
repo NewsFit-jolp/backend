@@ -1,6 +1,8 @@
 package com.example.newsfit.domain.member.service;
 
 import com.example.newsfit.domain.member.dto.GetMemberInfo;
+import com.example.newsfit.domain.member.dto.GetPreferredCategories;
+import com.example.newsfit.domain.member.dto.GetPreferredPress;
 import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Gender;
 import com.example.newsfit.domain.member.entity.Member;
@@ -8,9 +10,7 @@ import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
+import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -26,35 +26,30 @@ import java.util.Date;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final EntityManager em;
 
-    public MemberService(MemberRepository memberRepository, EntityManagerFactory emf) {
-        this.memberRepository = memberRepository;
-        this.em = emf.createEntityManager();
+    public JSONObject jsonObjectParser(String requestBody) throws ParseException {
+        JSONParser parser = new JSONParser();
+        Object parsedBody = parser.parse(requestBody);
+        return (JSONObject) parsedBody;
     }
 
-    public GetMemberInfo getUserInfo() {
-        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    public GetMemberInfo getMemberInfo() {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetMemberInfo.of(member);
     }
 
-    public GetMemberInfo putUserInfo(String requestBody) throws  ParseException, java.text.ParseException {
-        Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    @Transactional
+    public GetMemberInfo putMemberInfo(String requestBody) throws  ParseException, java.text.ParseException {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-
-        Member putMember = em.find(Member.class, member.getMemberId());
-
-        JSONParser parser = new JSONParser();
-        Object parsedBody = parser.parse(requestBody);
-        JSONObject jsonObject = (JSONObject) parsedBody;
+        JSONObject jsonObject = jsonObjectParser(requestBody);
 
         String name = (String) jsonObject.get("name");
         String email = (String) jsonObject.get("email");
@@ -64,22 +59,68 @@ public class MemberService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Date birth = formatter.parse((String) jsonObject.get("birth"));
 
+        member.putMember(name, email, phone, birth, gender);
+
+        return GetMemberInfo.of(member);
+    }
+
+    @Transactional
+    public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+
         JSONArray preferredCategories = (JSONArray) jsonObject.get("preferredCategories");
+        member.putCategories(preferredCategories);
+
+        return GetPreferredCategories.of(member);
+    }
+
+    @Transactional
+    public GetPreferredPress putPreferredPress(String requestBody) throws ParseException {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+
         JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
+        member.putPress(preferredPress);
 
-        putMember.putMember(name, email, phone, birth, gender);
-        putMember.putCategories(preferredCategories);
-        putMember.putPress(preferredPress);
-        transaction.commit();
+        return GetPreferredPress.of(member);
+    }
 
-        return GetMemberInfo.of(putMember);
+    @Transactional
+    public Boolean deleteMember(){
+        String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        member.deleteMember();
+
+        return true;
+    }
+
+    public GetPreferredCategories getPreferredCategories(){
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return GetPreferredCategories.of(member);
+    }
+
+    public GetPreferredPress getPreferredPress(){
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return GetPreferredPress.of(member);
     }
 
     @Transactional
     public Boolean deleteUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         memberRepository.delete(member);
@@ -89,16 +130,18 @@ public class MemberService {
 
     public Pair<Member, Boolean> registerMemberIfNeed(MemberDto MemberInfo) {
 
+        String memberId = MemberInfo.getMemberId();
         String memberEmail = MemberInfo.getEmail();
         String memberNickname = MemberInfo.getNickname();
         String memberProfileImage = MemberInfo.getProfileImage();
 
-        Member member = memberRepository.findByEmail(memberEmail)
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElse(null);
 
         if (member == null) {
 
             member = Member.builder()
+                    .memberId(memberId)
                     .email(memberEmail)
                     .nickname(memberNickname)
                     .profileImage(memberProfileImage)

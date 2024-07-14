@@ -31,6 +31,8 @@ public class KakaoMemberService {
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String clientSecret;
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String kakaoRedirectUri;
 
@@ -99,6 +101,8 @@ public class KakaoMemberService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
+        String memberId = "kakao " + jsonNode.get("kakao_account").get("email").asText();
+
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
 
@@ -106,7 +110,7 @@ public class KakaoMemberService {
 
         String thumbnailImage = jsonNode.get("kakao_account").get("profile").get("thumbnail_image_url").asText();
 
-        return MemberDto.of(email, nickname, thumbnailImage);
+        return MemberDto.of(memberId, email, nickname, thumbnailImage);
     }
 
 }

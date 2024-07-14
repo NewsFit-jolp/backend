@@ -22,7 +22,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class NaverMemberService {
@@ -101,6 +100,8 @@ public class NaverMemberService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
+        String memberId = "naver " + jsonNode.get("response").get("email").asText();
+
         String nickname = jsonNode.get("response")
                 .get("nickname").asText();
 
@@ -108,7 +109,7 @@ public class NaverMemberService {
 
         String thumbnailImage = jsonNode.get("response").get("profile_image").asText();
 
-        return MemberDto.of(email, nickname, thumbnailImage);
+        return MemberDto.of(memberId, email, nickname, thumbnailImage);
     }
 
 }

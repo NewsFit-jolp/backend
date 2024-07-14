@@ -101,13 +101,15 @@ public class GoogleMemberService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
+        String memberId = "google" + jsonNode.get("email").asText();
+
         String nickname = jsonNode.get("name").asText();
 
         String email = jsonNode.get("email").asText();
 
         String thumbnailImage = jsonNode.get("picture").asText();
 
-        return MemberDto.of(email, nickname, thumbnailImage);
+        return MemberDto.of(memberId, email, nickname, thumbnailImage);
     }
 
 }

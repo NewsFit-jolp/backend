@@ -1,6 +1,8 @@
 package com.example.newsfit.domain.member.api;
 
 import com.example.newsfit.domain.member.dto.GetMemberInfo;
+import com.example.newsfit.domain.member.dto.GetPreferredCategories;
+import com.example.newsfit.domain.member.dto.GetPreferredPress;
 import com.example.newsfit.domain.member.service.MemberService;
 import com.example.newsfit.global.jwt.TokenResponse;
 import com.example.newsfit.global.oauth.GoogleMemberService;
@@ -135,17 +137,69 @@ public class MemberController {
                     유저 정보를 조회합니다.
                     """)
     @GetMapping("/info")
-    public SuccessResponse<GetMemberInfo> getUserInfo() {
-        return SuccessResponse.success(memberService.getUserInfo());
+    public SuccessResponse<GetMemberInfo> getMemberInfo() {
+        return SuccessResponse.success(memberService.getMemberInfo());
     }
 
     @Operation(summary = "유저 정보 수정하기",
             description = """
                     유저 정보를 수정합니다.
+                    수정 가능한 항목들
+                    - 이름
+                    - 이메일
+                    - 전화번호
+                    - 성별
+                    - 생일
                     """)
     @PutMapping("/info")
-    public SuccessResponse<GetMemberInfo> putUserInfo(@RequestBody String requestBody) throws ParseException, JsonProcessingException, java.text.ParseException {
-        return SuccessResponse.success(memberService.putUserInfo(requestBody));
+    public SuccessResponse<GetMemberInfo> putMemberInfo(@RequestBody String requestBody) throws ParseException, java.text.ParseException {
+        return SuccessResponse.success(memberService.putMemberInfo(requestBody));
+    }
+
+    @Operation(summary = "유저 선호 주제 수정하기",
+            description = """
+                    유저 선호 주제를 수정합니다.
+                    """)
+    @PutMapping("/categories")
+    public SuccessResponse<GetPreferredCategories> putPreferredCategories(@RequestBody String requestBody) throws ParseException {
+        return SuccessResponse.success(memberService.putPreferredCategories(requestBody));
+    }
+
+    @Operation(summary = "유저 선호 언론사 수정하기",
+            description = """
+                    유저 선호 언론사를 수정합니다.
+                    """)
+    @PutMapping("/press")
+    public SuccessResponse<GetPreferredPress> purPreferredPress(@RequestBody String requestBody) throws ParseException {
+        return SuccessResponse.success(memberService.putPreferredPress(requestBody));
+    }
+
+    @Operation(summary = "유저 회원 탈퇴",
+            description = """
+                    회원 탈퇴를 진행합니다.
+                    """)
+    @DeleteMapping("/withdraw")
+    public SuccessResponse<Boolean> deleteMember() {
+        return SuccessResponse.success(memberService.deleteMember());
+    }
+
+
+    @Operation(summary = "유저 선호 주제 조회하기",
+    description = """
+            유저 선호 주제를 조회합니다.
+            """)
+    @GetMapping("/categories")
+    public SuccessResponse<GetPreferredCategories> getPreferredCategories(){
+        return SuccessResponse.success(memberService.getPreferredCategories());
+    }
+
+    @Operation(summary = "유저 선호 언론사 조회하기",
+            description = """
+            유저 선호 언론사를 조회합니다.
+            """)
+    @GetMapping("/press")
+    public SuccessResponse<GetPreferredPress> getPreferredPress(){
+        return SuccessResponse.success(memberService.getPreferredPress());
     }
 
     @Operation(summary = "(개발용) 유저 삭제하기",
