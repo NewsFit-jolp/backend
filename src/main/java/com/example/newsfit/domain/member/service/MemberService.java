@@ -102,6 +102,20 @@ public class MemberService {
         return true;
     }
 
+    public GetPreferredCategories getPreferredCategories(){
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return GetPreferredCategories.of(member);
+    }
+
+    public GetPreferredPress getPreferredPress(){
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return GetPreferredPress.of(member);
+    }
+
     @Transactional
     public Boolean deleteUser() {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
