@@ -1,5 +1,6 @@
-package com.example.newsfit.domain.member.entity;
+package com.example.newsfit.domain.article.entity;
 
+import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
