@@ -1,5 +1,7 @@
 package com.example.newsfit.domain.member.entity;
 
+import com.example.newsfit.domain.article.entity.Category;
+import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -32,7 +34,7 @@ public class Member extends BaseEntity {
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private List<Categories> preferredCategories;
+    private List<Category> preferredCategories;
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
@@ -69,7 +71,7 @@ public class Member extends BaseEntity {
     public Member putCategories(JSONArray categories) {
         preferredCategories = new ArrayList<>();
         for (Object category : categories) {
-            preferredCategories.add(Categories.valueOf((String) category));
+            preferredCategories.add(Category.valueOf(((String) category).toUpperCase()));
         }
         return this;
     }
@@ -77,12 +79,12 @@ public class Member extends BaseEntity {
     public Member putPress(JSONArray presses) {
         preferredPress = new ArrayList<>();
         for (Object press : presses) {
-            preferredPress.add(Press.valueOf((String) press));
+            preferredPress.add(Press.valueOf(((String) press).toUpperCase()));
         }
         return this;
     }
 
-    public void deleteMember(){
+    public void deleteMember() {
         this.isDeleted = true;
     }
 }

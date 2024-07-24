@@ -13,7 +13,6 @@ import com.example.newsfit.global.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,18 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.newsfit.global.util.Utils.jsonObjectParser;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
-    public JSONObject jsonObjectParser(String requestBody) throws ParseException {
-        JSONParser parser = new JSONParser();
-        Object parsedBody = parser.parse(requestBody);
-        return (JSONObject) parsedBody;
-    }
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())

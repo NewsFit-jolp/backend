@@ -1,5 +1,6 @@
 package com.example.newsfit.domain.member.dto;
 
+import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.domain.member.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
