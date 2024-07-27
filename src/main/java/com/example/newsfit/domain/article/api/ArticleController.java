@@ -31,7 +31,7 @@ public class ArticleController {
     @Operation(summary = "뉴스 조회",
             description = """
                     뉴스 조회 API입니다.
-                    
+                                        
                     파라미터는 다음과 같습니다.
                     category: 조회하고자 하는 기사의 카테고리를 지정합니다.
                     press: 조회하고자 하는 기사의 언론사를 지정합니다.
@@ -44,5 +44,14 @@ public class ArticleController {
                                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                                      @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return SuccessResponse.success(articleService.getArticles(category, press, page, size));
+    }
+
+    @Operation(summary = "뉴스 삭제",
+            description = """
+                    뉴스 삭제 API입니다.
+                    """)
+    @DeleteMapping("/{articleId}")
+    public SuccessResponse<Boolean> deleteArticle(@PathVariable("articleId") String articleId) {
+        return SuccessResponse.success(articleService.removeArticle(Long.parseLong(articleId)));
     }
 }

@@ -5,13 +5,16 @@ import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.entity.Category;
 import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.domain.article.repository.ArticleRepository;
+import com.example.newsfit.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.webjars.NotFoundException;
 
 import java.util.List;
 
@@ -76,6 +79,15 @@ public class ArticleService {
         } else {
             return articleRepository.findByCategoryAndPress(categoryEnum, pressEnum, pageable);
         }
+    }
+
+    public Boolean removeArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new NotFoundException("기사를 찾을 수 없습니다."));
+
+        articleRepository.delete(article);
+
+        return true;
     }
 }
 
