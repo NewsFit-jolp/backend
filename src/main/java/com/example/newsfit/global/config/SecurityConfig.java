@@ -37,6 +37,10 @@ public class SecurityConfig {
             "/member/**"
     };
 
+    private final String[] ArticlePatterns = {
+            "/article/**"
+    };
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(BasicPatterns).permitAll()
                         .requestMatchers(securityPatterns).permitAll()
                         .requestMatchers(MemberPatterns).authenticated()
+                        .requestMatchers(ArticlePatterns).permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)

@@ -1,6 +1,8 @@
 package com.example.newsfit.domain.member.service;
 
 import com.example.newsfit.domain.member.dto.GetMemberInfo;
+import com.example.newsfit.domain.member.dto.GetPreferredCategories;
+import com.example.newsfit.domain.member.dto.GetPreferredPress;
 import com.example.newsfit.domain.member.dto.MemberDto;
 import com.example.newsfit.domain.member.entity.Gender;
 import com.example.newsfit.domain.member.entity.Member;
@@ -11,7 +13,6 @@ import com.example.newsfit.global.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,13 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.newsfit.global.util.Utils.jsonObjectParser;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -42,9 +44,7 @@ public class MemberService {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        JSONParser parser = new JSONParser();
-        Object parsedBody = parser.parse(requestBody);
-        JSONObject jsonObject = (JSONObject) parsedBody;
+        JSONObject jsonObject = jsonObjectParser(requestBody);
 
         String name = (String) jsonObject.get("name");
         String email = (String) jsonObject.get("email");
@@ -54,14 +54,35 @@ public class MemberService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Date birth = formatter.parse((String) jsonObject.get("birth"));
 
-        JSONArray preferredCategories = (JSONArray) jsonObject.get("preferredCategories");
-        JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
-
         member.putMember(name, email, phone, birth, gender);
-        member.putCategories(preferredCategories);
-        member.putPress(preferredPress);
 
         return GetMemberInfo.of(member);
+    }
+
+    @Transactional
+    public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+
+        JSONArray preferredCategories = (JSONArray) jsonObject.get("preferredCategories");
+        member.putCategories(preferredCategories);
+
+        return GetPreferredCategories.of(member);
+    }
+
+    @Transactional
+    public GetPreferredPress putPreferredPress(String requestBody) throws ParseException {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+
+        JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
+        member.putPress(preferredPress);
+
+        return GetPreferredPress.of(member);
     }
 
     @Transactional
@@ -74,6 +95,20 @@ public class MemberService {
         member.deleteMember();
 
         return true;
+    }
+
+    public GetPreferredCategories getPreferredCategories(){
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return GetPreferredCategories.of(member);
+    }
+
+    public GetPreferredPress getPreferredPress(){
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return GetPreferredPress.of(member);
     }
 
     @Transactional

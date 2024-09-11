@@ -1,4 +1,4 @@
-package com.example.newsfit.domain.member.entity;
+package com.example.newsfit.domain.article.entity;
 
 import com.example.newsfit.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -22,16 +22,18 @@ public class Article extends BaseEntity {
 
     private String title;
     private String content;
-    private String press;
+
     @Enumerated(EnumType.STRING)
-    private Categories category;
+    private Press press;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     @OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Article(String title, String content, String press,
-                   Categories category) {
+    public Article(String title, String content, Press press,
+                   Category category) {
         this.title = title;
         this.content = content;
         this.press = press;
