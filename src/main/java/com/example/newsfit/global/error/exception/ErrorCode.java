@@ -14,7 +14,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "C003", "서버 에러입니다."),
     USER_NOT_FOUND(404, "C004", "존재하지 않는 사용자입니다."),
     INVALID_REQUEST_ERROR(400, "C005", "잘못된 요청입니다."),
-    WITHDRAWAL_USER(401, "C006", "탈퇴한 사용자입니다.");
+    WITHDRAWAL_USER(401, "C006", "탈퇴한 사용자입니다."),
+    ARTICLE_NOT_FOUND(404, "C007", "존재하지 않는 게시글입니다.");
 
 
     private final int status;
