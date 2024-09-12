@@ -1,11 +1,13 @@
 package com.example.newsfit.domain.article.api;
 
 import com.example.newsfit.domain.article.dto.GetArticle;
+import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.service.ArticleService;
 import com.example.newsfit.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +46,25 @@ public class ArticleController {
                                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                                      @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         return SuccessResponse.success(articleService.getArticles(category, press, page, size));
+    }
+
+    @Operation(summary = "뉴스 삭제",
+            description = """
+                    뉴스 삭제 API입니다.
+                    """)
+    @DeleteMapping("/{articleId}")
+    public SuccessResponse<Boolean> deleteArticle(@PathVariable("articleId") String articleId) {
+        return SuccessResponse.success(articleService.removeArticle(Long.parseLong(articleId)));
+    }
+
+    @Operation(summary = "댓글 작성",
+            description = """
+                    댓글 작성 API입니다.
+                    """)
+    @PostMapping("/{articleId}/comments/{parentCommentId}")
+    public SuccessResponse<GetComment> postComment(@PathVariable("articleId") String articleId,
+                                                   @PathVariable(value = "parentCommentId", required = false) String parentCommentId,
+                                                   @RequestBody String requestBody) throws ParseException {
+        return SuccessResponse.createSuccess(articleService.postComment(articleId, parentCommentId, requestBody));
     }
 }

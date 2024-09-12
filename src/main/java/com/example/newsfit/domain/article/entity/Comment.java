@@ -39,7 +39,10 @@ public class Comment extends BaseEntity {
     private Member member;
 
     @Builder
-    public Comment(String content) {
+    public Comment(Comment parentComment, String content, Article article, Member member) {
         this.content = content;
+        this.parentComment = parentComment;
+        this.article = article;
+        this.member = member;
     }
 }
