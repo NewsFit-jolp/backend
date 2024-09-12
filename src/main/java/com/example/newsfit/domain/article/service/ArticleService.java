@@ -1,17 +1,23 @@
 package com.example.newsfit.domain.article.service;
 
 import com.example.newsfit.domain.article.dto.GetArticle;
+import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.entity.Category;
+import com.example.newsfit.domain.article.entity.Comment;
 import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.domain.article.repository.ArticleRepository;
+import com.example.newsfit.domain.article.repository.CommentRepository;
 import com.example.newsfit.domain.member.entity.Member;
+import com.example.newsfit.domain.member.repository.MemberRepository;
+import com.example.newsfit.global.error.exception.CustomException;
+import com.example.newsfit.global.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
@@ -26,6 +32,8 @@ import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     public GetArticle postArticle(String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -59,7 +67,6 @@ public class ArticleService {
                 return List.of();
             }
         }
-        System.out.println("categoryEnum = " + categoryEnum);
 
         if (!"allPress".equalsIgnoreCase(press)) {
             try {
@@ -68,7 +75,6 @@ public class ArticleService {
                 return List.of();
             }
         }
-        System.out.println("pressEnum = " + pressEnum);
 
         if (categoryEnum == null && pressEnum == null) {
             return articleRepository.findAll(pageable).getContent();
@@ -88,6 +94,29 @@ public class ArticleService {
         articleRepository.delete(article);
 
         return true;
+    }
+
+    public GetComment postComment(String articleId, String parentCommentId, String requestBody) throws ParseException {
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Article article = articleRepository.findById(Long.parseLong(articleId))
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+
+        Comment parentComment = commentRepository.findById(Long.parseLong(parentCommentId))
+                .orElse(null);
+
+        String content = (String) jsonObject.get("content");
+
+        Comment comment = Comment.builder()
+                .member(member)
+                .article(article)
+                .parentComment(parentComment)
+                .content(content).build();
+
+        return GetComment.of(commentRepository.save(comment));
     }
 }
 
