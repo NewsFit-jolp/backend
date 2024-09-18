@@ -1,6 +1,7 @@
 package com.example.newsfit.domain.article.service;
 
 import com.example.newsfit.domain.article.dto.GetArticle;
+import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.entity.Category;
@@ -35,7 +36,7 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
 
-    public GetArticle postArticle(String requestBody) throws ParseException {
+    public GetArticles postArticle(String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         String title = (String) jsonObject.get("title");
@@ -52,7 +53,7 @@ public class ArticleService {
 
         articleRepository.save(article);
 
-        return GetArticle.of(article);
+        return GetArticles.of(article);
     }
 
     public List<Article> getArticles(String category, String press, int page, int size) {
@@ -96,7 +97,7 @@ public class ArticleService {
         return true;
     }
 
-    public GetComment postComment(String articleId, String parentCommentId, String requestBody) throws ParseException {
+    public GetComment postComment(String articleId, String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -105,18 +106,22 @@ public class ArticleService {
         Article article = articleRepository.findById(Long.parseLong(articleId))
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        Comment parentComment = commentRepository.findById(Long.parseLong(parentCommentId))
-                .orElse(null);
 
         String content = (String) jsonObject.get("content");
 
         Comment comment = Comment.builder()
                 .member(member)
                 .article(article)
-                .parentComment(parentComment)
                 .content(content).build();
 
         return GetComment.of(commentRepository.save(comment));
+    }
+
+    public GetArticle getArticle(String articleId) {
+        Article article = articleRepository.findById(Long.parseLong(articleId))
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+
+        return GetArticle.of(article);
     }
 }
 
