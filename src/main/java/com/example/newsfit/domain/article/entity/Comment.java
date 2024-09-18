@@ -24,13 +24,6 @@ public class Comment extends BaseEntity {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "parent")
-    private Comment parentComment;
-
-    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
-    private List<Comment> childrenComment = new ArrayList<>();
-
-    @ManyToOne
     @JoinColumn(name = "article")
     private Article article;
 
@@ -39,9 +32,8 @@ public class Comment extends BaseEntity {
     private Member member;
 
     @Builder
-    public Comment(Comment parentComment, String content, Article article, Member member) {
+    public Comment(String content, Article article, Member member) {
         this.content = content;
-        this.parentComment = parentComment;
         this.article = article;
         this.member = member;
     }
