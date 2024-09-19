@@ -1,13 +1,13 @@
 package com.example.newsfit.domain.article.api;
 
 import com.example.newsfit.domain.article.dto.GetArticle;
+import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.service.ArticleService;
 import com.example.newsfit.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class ArticleController {
                     뉴스를 등록하는 API입니다.
                     """)
     @PostMapping
-    public SuccessResponse<GetArticle> postArticle(@RequestBody String requestBody) throws ParseException {
+    public SuccessResponse<GetArticles> postArticle(@RequestBody String requestBody) throws ParseException {
         return SuccessResponse.success(articleService.postArticle(requestBody));
     }
 
@@ -48,6 +48,16 @@ public class ArticleController {
         return SuccessResponse.success(articleService.getArticles(category, press, page, size));
     }
 
+    @Operation(summary = "뉴스 기사 단건 조회",
+    description = """
+            뉴스 기사 단건 조회 API입니다.
+            """)
+
+    @GetMapping("/{articleId}")
+    public SuccessResponse<GetArticle> getArticle(@PathVariable String articleId) {
+        return SuccessResponse.success(articleService.getArticle(articleId));
+    }
+
     @Operation(summary = "뉴스 삭제",
             description = """
                     뉴스 삭제 API입니다.
@@ -61,10 +71,9 @@ public class ArticleController {
             description = """
                     댓글 작성 API입니다.
                     """)
-    @PostMapping("/{articleId}/comments/{parentCommentId}")
+    @PostMapping("/{articleId}/comments")
     public SuccessResponse<GetComment> postComment(@PathVariable("articleId") String articleId,
-                                                   @PathVariable(value = "parentCommentId", required = false) String parentCommentId,
                                                    @RequestBody String requestBody) throws ParseException {
-        return SuccessResponse.createSuccess(articleService.postComment(articleId, parentCommentId, requestBody));
+        return SuccessResponse.createSuccess(articleService.postComment(articleId, requestBody));
     }
 }
