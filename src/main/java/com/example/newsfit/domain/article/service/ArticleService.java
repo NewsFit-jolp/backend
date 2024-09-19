@@ -160,5 +160,23 @@ public class ArticleService {
 
         return true;
     }
+
+    public Boolean deleteArticleLikes(String articleId) {
+        Article article = articleRepository.findById(Long.parseLong(articleId))
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Optional<Integer> removeLike = articleLikesRepository.removeByMemberAndArticle(member, article);
+
+        if(removeLike.isPresent() && removeLike.get() == 0){
+            throw new CustomException(ErrorCode.ARTICLE_LIKE_NOT_FOUND);
+        }
+
+        article.subLikeCount();
+
+        return true;
+    }
 }
 
