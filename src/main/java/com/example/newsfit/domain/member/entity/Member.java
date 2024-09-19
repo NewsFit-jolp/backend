@@ -20,6 +20,7 @@ import java.util.List;
 public class Member extends BaseEntity {
 
     @Id
+    @Column(name = "member_id")
     private String memberId;
 
     @Column(unique = true)
