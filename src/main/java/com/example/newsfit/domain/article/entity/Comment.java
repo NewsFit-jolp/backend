@@ -37,4 +37,9 @@ public class Comment extends BaseEntity {
         this.article = article;
         this.member = member;
     }
+
+    public Boolean deleteComment(){
+        this.isDeleted = false;
+        return true;
+    }
 }
