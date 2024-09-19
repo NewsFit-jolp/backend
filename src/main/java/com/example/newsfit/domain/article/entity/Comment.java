@@ -39,7 +39,7 @@ public class Comment extends BaseEntity {
     }
 
     public Boolean deleteComment(){
-        this.isDeleted = false;
+        this.isDeleted = true;
         return true;
     }
 }
