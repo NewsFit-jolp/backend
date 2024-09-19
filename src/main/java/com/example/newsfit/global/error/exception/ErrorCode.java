@@ -16,7 +16,8 @@ public enum ErrorCode {
     INVALID_REQUEST_ERROR(400, "C005", "잘못된 요청입니다."),
     WITHDRAWAL_USER(401, "C006", "탈퇴한 사용자입니다."),
     ARTICLE_NOT_FOUND(404, "C007", "존재하지 않는 게시글입니다."),
-    COMMENT_NOT_FOUND(404, "C008", "존재하지 않는 댓글입니다.");
+    COMMENT_NOT_FOUND(404, "C008", "존재하지 않는 댓글입니다."),
+    COMMENT_DELETE_FORBIDDEN(403, "C009", "댓글 삭제 권한이 없는 사용자입니다.");
 
 
     private final int status;
