@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ArticleLikesRepository extends JpaRepository<ArticleLike, Long> {
     Optional<ArticleLike> findByMemberAndArticle(Member member, Article article);
 
+    Optional<Integer> removeByMemberAndArticle(Member member, Article article);
 }
