@@ -14,7 +14,8 @@ public record GetArticle(
         @Schema(description = "내용") String content,
         @Schema(description = "언론사") Press press,
         @Schema(description = "카테고리") Category category,
-        @Schema(description = "댓글") List<GetComment> comment
+        @Schema(description = "댓글") List<GetComment> comment,
+        @Schema(description = "좋아요 수") Integer likeCount
 ) {
     private static List<GetComment> getComments(Article article) {
         List<GetComment> commentDtoList = new ArrayList<>();
@@ -32,7 +33,8 @@ public record GetArticle(
                 article.getContent(),
                 article.getPress(),
                 article.getCategory(),
-                getComments(article)
+                getComments(article),
+                article.getLikeCount()
         );
     }
 }
