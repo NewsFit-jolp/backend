@@ -128,6 +128,13 @@ public class ArticleService {
         Comment comment = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if(!comment.getMember().equals(member)){
+            throw new CustomException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
+        }
+
         return comment.deleteComment();
     }
 }
