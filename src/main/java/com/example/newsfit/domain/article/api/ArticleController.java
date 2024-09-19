@@ -86,4 +86,13 @@ public class ArticleController {
                                                   @PathVariable("commentId") String commentId) {
         return SuccessResponse.success(articleService.deleteComment(articleId, commentId));
     }
+
+    @Operation(summary = "뉴스 좋아요",
+            description = """
+                    뉴스 좋아요 API입니다.
+                    """)
+    @PostMapping("/{articleId}/likes")
+    public SuccessResponse<Boolean> postArticleLikes(@PathVariable("articleId") String articleId) {
+        return SuccessResponse.createSuccess(articleService.postArticleLikes(articleId));
+    }
 }
