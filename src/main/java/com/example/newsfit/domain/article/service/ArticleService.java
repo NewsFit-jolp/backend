@@ -123,5 +123,12 @@ public class ArticleService {
 
         return GetArticle.of(article);
     }
+
+    public Boolean deleteComment(String articleId, String commentId) {
+        Comment comment = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        return comment.deleteComment();
+    }
 }
 
