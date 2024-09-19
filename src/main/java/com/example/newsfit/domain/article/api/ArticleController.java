@@ -49,9 +49,9 @@ public class ArticleController {
     }
 
     @Operation(summary = "뉴스 기사 단건 조회",
-    description = """
-            뉴스 기사 단건 조회 API입니다.
-            """)
+            description = """
+                    뉴스 기사 단건 조회 API입니다.
+                    """)
 
     @GetMapping("/{articleId}")
     public SuccessResponse<GetArticle> getArticle(@PathVariable String articleId) {
@@ -75,5 +75,15 @@ public class ArticleController {
     public SuccessResponse<GetComment> postComment(@PathVariable("articleId") String articleId,
                                                    @RequestBody String requestBody) throws ParseException {
         return SuccessResponse.createSuccess(articleService.postComment(articleId, requestBody));
+    }
+
+    @Operation(summary = "댓글 삭제",
+            description = """
+                    댓글 삭제 API입니다.
+                    """)
+    @DeleteMapping("/{articleId}/comments/{commentId}")
+    public SuccessResponse<Boolean> deleteComment(@PathVariable("articleId") String articleId,
+                                                  @PathVariable("commentId") String commentId) {
+        return SuccessResponse.success(articleService.deleteComment(articleId, commentId));
     }
 }
