@@ -6,6 +6,7 @@ import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.entity.*;
 import com.example.newsfit.domain.article.repository.ArticleLikesRepository;
 import com.example.newsfit.domain.article.repository.ArticleRepository;
+import com.example.newsfit.domain.article.repository.CommentLikesRepository;
 import com.example.newsfit.domain.article.repository.CommentRepository;
 import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.repository.MemberRepository;
@@ -35,6 +36,7 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final ArticleLikesRepository articleLikesRepository;
+    private final CommentLikesRepository commentLikesRepository;
 
     public GetArticles postArticle(String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -175,6 +177,28 @@ public class ArticleService {
         }
 
         article.subLikeCount();
+
+        return true;
+    }
+
+    public Boolean postCommentLikes(String articleId, String commentId){
+        Comment comment = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if(commentLikesRepository.findByMemberAndComment(member, comment).isPresent()){
+            throw new CustomException(ErrorCode.DUPLICATED_COMMENT_LIKE);
+        }
+
+        CommentLike commentLike = CommentLike.builder()
+                .comment(comment)
+                .member(member)
+                .build();
+
+        commentLikesRepository.save(commentLike);
+        comment.addLikeCount();
 
         return true;
     }
