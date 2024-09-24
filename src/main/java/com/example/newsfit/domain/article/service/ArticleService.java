@@ -133,7 +133,7 @@ public class ArticleService {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if(!comment.getMember().equals(member)){
+        if (!comment.getMember().equals(member)) {
             throw new CustomException(ErrorCode.COMMENT_DELETE_FORBIDDEN);
         }
 
@@ -148,7 +148,7 @@ public class ArticleService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
 
-        if(articleLikesRepository.findByMemberAndArticle(member, article).isPresent()){
+        if (articleLikesRepository.findByMemberAndArticle(member, article).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_ARTICLE_LIKE);
         }
 
@@ -172,7 +172,7 @@ public class ArticleService {
 
         Optional<Integer> removeLike = articleLikesRepository.removeByMemberAndArticle(member, article);
 
-        if(removeLike.isPresent() && removeLike.get() == 0){
+        if (removeLike.isPresent() && removeLike.get() == 0) {
             throw new CustomException(ErrorCode.ARTICLE_LIKE_NOT_FOUND);
         }
 
@@ -181,14 +181,14 @@ public class ArticleService {
         return true;
     }
 
-    public Boolean postCommentLikes(String articleId, String commentId){
+    public Boolean postCommentLikes(String articleId, String commentId) {
         Comment comment = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if(commentLikesRepository.findByMemberAndComment(member, comment).isPresent()){
+        if (commentLikesRepository.findByMemberAndComment(member, comment).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_COMMENT_LIKE);
         }
 
@@ -199,6 +199,24 @@ public class ArticleService {
 
         commentLikesRepository.save(commentLike);
         comment.addLikeCount();
+
+        return true;
+    }
+
+    public Boolean deleteCommentLikes(String articleId, String commentId) {
+        Comment comment = commentRepository.findById(Long.parseLong(commentId))
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Optional<Integer> removeLike = commentLikesRepository.removeByMemberAndComment(member, comment);
+
+        if (removeLike.isPresent() && removeLike.get() == 0) {
+            throw new CustomException(ErrorCode.ARTICLE_LIKE_NOT_FOUND);
+        }
+
+        comment.subLikeCount();
 
         return true;
     }
