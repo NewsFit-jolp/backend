@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.hibernate.annotations.ColumnDefault;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -31,6 +29,9 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "member")
     private Member member;
 
+    @ColumnDefault("0")
+    private int likeCount;
+
     @Builder
     public Comment(String content, Article article, Member member) {
         this.content = content;
@@ -38,8 +39,17 @@ public class Comment extends BaseEntity {
         this.member = member;
     }
 
-    public Boolean deleteComment(){
+    public Boolean deleteComment() {
         this.isDeleted = true;
         return true;
+    }
+
+
+    public void addLikeCount(){
+        likeCount++;
+    }
+
+    public void subLikeCount(){
+        likeCount--;
     }
 }
