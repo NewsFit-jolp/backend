@@ -3,7 +3,10 @@ package com.example.newsfit.domain.article.entity;
 import com.example.newsfit.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Entity
+@NoArgsConstructor
 public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
