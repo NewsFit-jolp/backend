@@ -51,6 +51,4 @@ out/
 ### application ###
 application-secret.yml
 *.properties
-*.yml
-*.yaml
 /src/main/generated/
