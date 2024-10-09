@@ -10,6 +10,7 @@ import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
+import com.example.newsfit.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -31,6 +32,7 @@ import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -40,7 +42,7 @@ public class MemberService {
     }
 
     @Transactional
-    public GetMemberInfo putMemberInfo(String requestBody) throws  ParseException, java.text.ParseException {
+    public GetMemberInfo putMemberInfo(String requestBody) throws ParseException, java.text.ParseException {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -86,7 +88,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Boolean deleteMember(){
+    public Boolean deleteMember() {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Member member = memberRepository.findByMemberId(memberId)
@@ -97,14 +99,14 @@ public class MemberService {
         return true;
     }
 
-    public GetPreferredCategories getPreferredCategories(){
+    public GetPreferredCategories getPreferredCategories() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetPreferredCategories.of(member);
     }
 
-    public GetPreferredPress getPreferredPress(){
+    public GetPreferredPress getPreferredPress() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -149,5 +151,10 @@ public class MemberService {
 
         }
         return Pair.of(member, false);
+    }
+
+    public Boolean logout(String accessToken) {
+        redisUtil.setBlackList(accessToken, "logout", 8640000000L);
+        return true;
     }
 }

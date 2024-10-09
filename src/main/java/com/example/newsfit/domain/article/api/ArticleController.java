@@ -114,4 +114,14 @@ public class ArticleController {
                                                      @PathVariable("commentId") String commentId) {
         return SuccessResponse.createSuccess(articleService.postCommentLikes(articleId, commentId));
     }
+
+    @Operation(summary = "댓글 좋아요 취소",
+    description = """
+            댓글 좋아요 취소 API입니다.
+            """)
+    @DeleteMapping("/{articleId}/comments/{commentId}/likes")
+    public SuccessResponse<Boolean> deleteCommentLikes(@PathVariable("articleId") String articleId,
+                                                     @PathVariable("commentId") String commentId) {
+        return SuccessResponse.createSuccess(articleService.deleteCommentLikes(articleId, commentId));
+    }
 }

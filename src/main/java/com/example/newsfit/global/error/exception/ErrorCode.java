@@ -20,7 +20,8 @@ public enum ErrorCode {
     COMMENT_DELETE_FORBIDDEN(403, "C009", "댓글 삭제 권한이 없는 사용자입니다."),
     DUPLICATED_ARTICLE_LIKE(400, "C010", "이미 좋아요를 누른 게시글입니다."),
     ARTICLE_LIKE_NOT_FOUND(404, "C011", "좋아요를 누르지 않은 게시글입니다."),
-    DUPLICATED_COMMENT_LIKE(400, "C012", "이미 좋아요를 누른 댓글입니다.");
+    DUPLICATED_COMMENT_LIKE(400, "C012", "이미 좋아요를 누른 댓글입니다."),
+    TOKEN_EXPIRED(409, "C013", "만료된 토큰입니다.");
 
 
 
