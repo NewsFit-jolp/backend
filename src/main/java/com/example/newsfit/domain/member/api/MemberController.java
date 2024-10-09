@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,16 +35,16 @@ public class MemberController {
     @Operation(summary = "카카오 인증 서버를 통한 로그인",
             description = """
                     카카오 인증 서버를 통해 로그인합니다.
-                                        
+                    
                     **상태 코드에 따라 최초 회원가입, 기존 유저 로그인 여부를 알 수 있습니다.**
                     - statusCode가 200인 경우: 기존 유저 로그인
                     - statusCode가 201인 경우: 최초 회원가입
-                                        
+                    
                     개발용 유저 삭제 API를 통해 최초 회원가입이 정상적으로 처리되는지 확인할 수 있습니다.
-                                      
+                    
                     요청값:
                     - (Query Parameter) code: 카카오 인증서버에서 받은 인증 코드값입니다.
-                                        
+                    
                     반환값:
                     - accessToken: 서버 내부에서 발급한 토큰입니다.
                     - refreshToken: 서버 내부에서 발급한 토큰입니다.
@@ -68,16 +69,16 @@ public class MemberController {
     @Operation(summary = "구글 인증 서버를 통한 로그인",
             description = """
                     구글 인증 서버를 통해 로그인합니다.
-                                        
+                    
                     **상태 코드에 따라 최초 회원가입, 기존 유저 로그인 여부를 알 수 있습니다.**
                     - statusCode가 200인 경우: 기존 유저 로그인
                     - statusCode가 201인 경우: 최초 회원가입
-                                        
+                    
                     개발용 유저 삭제 API를 통해 최초 회원가입이 정상적으로 처리되는지 확인할 수 있습니다.
-                                      
+                    
                     요청값:
                     - (Query Parameter) code: 구글 인증서버에서 받은 인증 코드값입니다.
-                                        
+                    
                     반환값:
                     - accessToken: 서버 내부에서 발급한 토큰입니다.
                     - refreshToken: 서버 내부에서 발급한 토큰입니다.
@@ -100,16 +101,16 @@ public class MemberController {
     @Operation(summary = "네이버 인증 서버를 통한 로그인",
             description = """
                     네이버 인증 서버를 통해 로그인합니다.
-                                        
+                    
                     **상태 코드에 따라 최초 회원가입, 기존 유저 로그인 여부를 알 수 있습니다.**
                     - statusCode가 200인 경우: 기존 유저 로그인
                     - statusCode가 201인 경우: 최초 회원가입
-                                        
+                    
                     개발용 유저 삭제 API를 통해 최초 회원가입이 정상적으로 처리되는지 확인할 수 있습니다.
-                                      
+                    
                     요청값:
                     - (Query Parameter) code: 네이버 인증서버에서 받은 인증 코드값입니다.
-                                        
+                    
                     반환값:
                     - accessToken: 서버 내부에서 발급한 토큰입니다.
                     - refreshToken: 서버 내부에서 발급한 토큰입니다.
@@ -185,37 +186,44 @@ public class MemberController {
 
 
     @Operation(summary = "유저 선호 주제 조회하기",
-    description = """
-            유저 선호 주제를 조회합니다.
-            """)
+            description = """
+                    유저 선호 주제를 조회합니다.
+                    """)
     @GetMapping("/categories")
-    public SuccessResponse<GetPreferredCategories> getPreferredCategories(){
+    public SuccessResponse<GetPreferredCategories> getPreferredCategories() {
         return SuccessResponse.success(memberService.getPreferredCategories());
     }
 
     @Operation(summary = "유저 선호 언론사 조회하기",
             description = """
-            유저 선호 언론사를 조회합니다.
-            """)
+                    유저 선호 언론사를 조회합니다.
+                    """)
     @GetMapping("/press")
-    public SuccessResponse<GetPreferredPress> getPreferredPress(){
+    public SuccessResponse<GetPreferredPress> getPreferredPress() {
         return SuccessResponse.success(memberService.getPreferredPress());
     }
 
     @Operation(summary = "(개발용) 유저 삭제하기",
             description = """
                     개발용 API입니다. 로그인 한 유저를 삭제합니다.
-                                        
+                    
                     **테스트용으로만 사용해야 합니다.**
-                                        
+                    
                     에피소드, 활동 태그, 보석함 등의 유저 관련 모든 데이터가 삭제됩니다.
-                                        
+                    
                     # **해당 API는 soft delete 하지 않고 데이터를 직접 삭제합니다. 사용에 주의하세요**
-                                        
+                    
                     """)
     @DeleteMapping("/delete")
     public SuccessResponse<Boolean> deleteUser() {
         return SuccessResponse.success(memberService.deleteUser());
     }
 
+
+    @DeleteMapping("/logout")
+    public SuccessResponse<Boolean> logout(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        String accessToken = authorization.split(" ")[1].trim();
+        return SuccessResponse.success(memberService.logout(accessToken));
+    }
 }
