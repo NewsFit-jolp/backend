@@ -92,7 +92,7 @@ jobs:
             aws configure set region ${{ env.AWS_REGION }}
             ECR_REGISTRY_LOGIN=$(aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }})
             sudo docker rm -f $(docker ps -qa)
-            sudo docker run -p 6379:6379 --name docker_redis redis
+            sudo docker run -d -p 6379:6379 --name docker_redis redis
             sudo docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}
             sudo docker run -d --name dc -p 8080:8080 ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}
             sudo docker image prune -f
