@@ -13,6 +13,7 @@ import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 
@@ -45,12 +48,20 @@ public class ArticleService {
         String content = (String) jsonObject.get("content");
         Press press = Press.valueOf(((String) jsonObject.get("press")).toUpperCase());
         Category category = Category.valueOf(((String) jsonObject.get("category")).toUpperCase());
+        JSONArray imageArray = (JSONArray) jsonObject.get("image");
+        List<String> images = new ArrayList<>();
+        if (imageArray != null) {
+            for (Object image : imageArray) {
+                images.add((String) image);
+            }
+        }
 
         Article article = Article.builder()
                 .title(title)
                 .content(content)
                 .press(press)
                 .category(category)
+                .images(images)
                 .build();
 
         articleRepository.save(article);
@@ -58,7 +69,7 @@ public class ArticleService {
         return GetArticles.of(article);
     }
 
-    public List<Article> getArticles(String category, String press, int page, int size) {
+    public List<GetArticle> getArticles(String category, String press, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Category categoryEnum = null;
         Press pressEnum = null;
@@ -79,15 +90,25 @@ public class ArticleService {
             }
         }
 
+        List<Article> articles = new ArrayList<>();
+
         if (categoryEnum == null && pressEnum == null) {
-            return articleRepository.findAll(pageable).getContent();
+            articles = articleRepository.findAll(pageable).getContent();
         } else if (categoryEnum == null) {
-            return articleRepository.findByPress(pressEnum, pageable);
+            articles = articleRepository.findByPress(pressEnum, pageable);
         } else if (pressEnum == null) {
-            return articleRepository.findByCategory(categoryEnum, pageable);
+            articles = articleRepository.findByCategory(categoryEnum, pageable);
         } else {
-            return articleRepository.findByCategoryAndPress(categoryEnum, pressEnum, pageable);
+            articles = articleRepository.findByCategoryAndPress(categoryEnum, pressEnum, pageable);
         }
+
+        List<GetArticle> returnArticles = new ArrayList<>();
+        for (Article article : articles) {
+            GetArticle getArticle = GetArticle.of(article);
+            returnArticles.add(getArticle);
+        }
+
+        return returnArticles;
     }
 
     public Boolean removeArticle(Long articleId) {
