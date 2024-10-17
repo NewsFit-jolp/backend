@@ -2,6 +2,7 @@ package com.example.newsfit.domain.article.entity;
 
 import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.global.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,10 +24,12 @@ public class Comment extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "article")
+    @JsonIgnore
     private Article article;
 
     @ManyToOne
     @JoinColumn(name = "member")
+    @JsonIgnore
     private Member member;
 
     @ColumnDefault("0")
