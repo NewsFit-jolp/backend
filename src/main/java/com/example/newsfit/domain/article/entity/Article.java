@@ -24,6 +24,9 @@ public class Article extends BaseEntity {
 
     private String title;
     private String content;
+    
+    @ElementCollection
+    private List<String> images;
 
     @Enumerated(EnumType.STRING)
     private Press press;
@@ -38,18 +41,19 @@ public class Article extends BaseEntity {
 
     @Builder
     public Article(String title, String content, Press press,
-                   Category category) {
+                   Category category, List<String> images) {
         this.title = title;
         this.content = content;
         this.press = press;
         this.category = category;
+        this.images = images;
     }
 
-    public void addLikeCount(){
+    public void addLikeCount() {
         likeCount++;
     }
 
-    public void subLikeCount(){
+    public void subLikeCount() {
         likeCount--;
     }
 }

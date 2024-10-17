@@ -41,7 +41,7 @@ public class ArticleController {
                     size: 한 페이지에 포함될 기사의 개수를 지정합니다.
                     """)
     @GetMapping
-    public SuccessResponse<List<Article>> getArticle(@RequestParam(value = "category", required = false, defaultValue = "allCategory") String category,
+    public SuccessResponse<List<GetArticle>> getArticle(@RequestParam(value = "category", required = false, defaultValue = "allCategory") String category,
                                                      @RequestParam(value = "press", required = false, defaultValue = "allPress") String press,
                                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                                      @RequestParam(value = "size", required = false, defaultValue = "10") int size) {

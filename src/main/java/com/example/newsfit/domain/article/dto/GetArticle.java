@@ -12,6 +12,7 @@ import java.util.List;
 public record GetArticle(
         @Schema(description = "제목") String title,
         @Schema(description = "내용") String content,
+        @Schema(description = "이미지") List<String> images,
         @Schema(description = "언론사") Press press,
         @Schema(description = "카테고리") Category category,
         @Schema(description = "댓글") List<GetComment> comment,
@@ -22,6 +23,7 @@ public record GetArticle(
         List<Comment> comments = article.getComments();
 
         for (Comment comment : comments) {
+            if(comment.getIsDeleted()) continue;
             commentDtoList.add(GetComment.of(comment));
         }
 
@@ -31,6 +33,7 @@ public record GetArticle(
         return new GetArticle(
                 article.getTitle(),
                 article.getContent(),
+                article.getImages(),
                 article.getPress(),
                 article.getCategory(),
                 getComments(article),
