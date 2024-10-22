@@ -10,7 +10,6 @@ import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
-import com.example.newsfit.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -32,7 +31,6 @@ import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final RedisUtil redisUtil;
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -151,10 +149,5 @@ public class MemberService {
 
         }
         return Pair.of(member, false);
-    }
-
-    public Boolean logout(String accessToken) {
-        redisUtil.setBlackList(accessToken, "logout", 8640000000L);
-        return true;
     }
 }

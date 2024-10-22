@@ -5,7 +5,6 @@ import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
-import com.example.newsfit.global.util.RedisUtil;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +27,6 @@ public class TokenService {
 
     private final JpaMemberDetailsService userDetailsService;
     private final MemberRepository memberRepository;
-    private final RedisUtil redisUtil;
 
     @PostConstruct
     protected void init() {
@@ -96,9 +94,6 @@ public class TokenService {
                 return false;
             } else {
                 token = token.split(" ")[1].trim();
-            }
-            if (redisUtil.hasKeyBlackList(token)) {
-                throw new CustomException(ErrorCode.TOKEN_EXPIRED);
             }
 
             JwtParser build = Jwts.parserBuilder()
