@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -217,13 +216,5 @@ public class MemberController {
     @DeleteMapping("/delete")
     public SuccessResponse<Boolean> deleteUser() {
         return SuccessResponse.success(memberService.deleteUser());
-    }
-
-
-    @DeleteMapping("/logout")
-    public SuccessResponse<Boolean> logout(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        String accessToken = authorization.split(" ")[1].trim();
-        return SuccessResponse.success(memberService.logout(accessToken));
     }
 }
