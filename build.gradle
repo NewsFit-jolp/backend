@@ -63,8 +63,8 @@ dependencies {
 	// JsonObject
 	implementation 'com.google.code.gson:gson:2.8.9'
 
-	// h2-database
-	runtimeOnly 'com.h2database:h2'
+	// logback
+	implementation 'com.github.maricn:logback-slack-appender:1.6.0'
 
 }
 
