@@ -23,10 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 
@@ -50,6 +50,10 @@ public class ArticleService {
         Category category = Category.valueOf(((String) jsonObject.get("category")).toUpperCase());
         JSONArray imageArray = (JSONArray) jsonObject.get("image");
         List<String> images = new ArrayList<>();
+        String articleSource = (String) jsonObject.get("articleSource");
+        String headLine = (String) jsonObject.get("headLine");
+        LocalDateTime publishDate = LocalDateTime.parse((String) jsonObject.get("publishDate"));
+
         if (imageArray != null) {
             for (Object image : imageArray) {
                 images.add((String) image);
@@ -62,6 +66,9 @@ public class ArticleService {
                 .press(press)
                 .category(category)
                 .images(images)
+                .articleSource(articleSource)
+                .headLine(headLine)
+                .publishDate(publishDate)
                 .build();
 
         articleRepository.save(article);

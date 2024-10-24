@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Article extends BaseEntity {
 
     private String title;
     private String content;
-    
+
     @ElementCollection
     private List<String> images;
 
@@ -32,6 +33,10 @@ public class Article extends BaseEntity {
     private Press press;
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    private String articleSource;
+    private LocalDateTime publishDate;
+    private String headLine;
 
     @OneToMany(mappedBy = "article", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
@@ -41,12 +46,16 @@ public class Article extends BaseEntity {
 
     @Builder
     public Article(String title, String content, Press press,
-                   Category category, List<String> images) {
+                   Category category, List<String> images,
+                   LocalDateTime publishDate, String articleSource, String headLine) {
         this.title = title;
         this.content = content;
         this.press = press;
         this.category = category;
         this.images = images;
+        this.publishDate = publishDate;
+        this.articleSource = articleSource;
+        this.headLine = headLine;
     }
 
     public void addLikeCount() {

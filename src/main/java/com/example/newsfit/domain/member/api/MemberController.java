@@ -84,7 +84,7 @@ public class MemberController {
                     """)
 
     @GetMapping("/oauth/google")
-    public SuccessResponse<TokenResponse> googleLogin(@Parameter(name = "code", description = "카카오 인증서버에서 받은 인증 코드", required = true)
+    public SuccessResponse<TokenResponse> googleLogin(@Parameter(name = "code", description = "구글 인증서버에서 받은 인증 코드", required = true)
                                                       @RequestParam String code) throws JsonProcessingException {
 
         String accessToken = googleMemberService.getAccessToken(code);
@@ -116,7 +116,7 @@ public class MemberController {
                     """)
 
     @GetMapping("/oauth/naver")
-    public SuccessResponse<TokenResponse> naverLogin(@Parameter(name = "code", description = "카카오 인증서버에서 받은 인증 코드", required = true)
+    public SuccessResponse<TokenResponse> naverLogin(@Parameter(name = "code", description = "네이버 인증서버에서 받은 인증 코드", required = true)
                                                      @RequestParam String code,
                                                      @Parameter(name = "state", description = "csrf 방지용 상태 토큰값", required = true)
                                                      @RequestParam String state) throws JsonProcessingException {
