@@ -3,7 +3,6 @@ package com.example.newsfit.domain.article.api;
 import com.example.newsfit.domain.article.dto.GetArticle;
 import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
-import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.service.ArticleService;
 import com.example.newsfit.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
