@@ -16,20 +16,22 @@ public record GetArticle(
         @Schema(description = "언론사") Press press,
         @Schema(description = "카테고리") Category category,
         @Schema(description = "댓글") List<GetComment> comment,
-        @Schema(description = "좋아요 수") Integer likeCount
+        @Schema(description = "좋아요 수") Integer likeCount,
+        @Schema(description = "내가 좋아요했는지 여부") Boolean likedArticle
 ) {
     private static List<GetComment> getComments(Article article) {
         List<GetComment> commentDtoList = new ArrayList<>();
         List<Comment> comments = article.getComments();
 
         for (Comment comment : comments) {
-            if(comment.getIsDeleted()) continue;
+            if (comment.getIsDeleted()) continue;
             commentDtoList.add(GetComment.of(comment));
         }
 
         return commentDtoList;
     }
-    public static GetArticle of(Article article) {
+
+    public static GetArticle of(Article article, Boolean isLikedArticle) {
         return new GetArticle(
                 article.getTitle(),
                 article.getContent(),
@@ -37,7 +39,8 @@ public record GetArticle(
                 article.getPress(),
                 article.getCategory(),
                 getComments(article),
-                article.getLikeCount()
+                article.getLikeCount(),
+                isLikedArticle
         );
     }
 }

@@ -151,7 +151,8 @@ public class ArticleService {
         Article article = articleRepository.findById(Long.parseLong(articleId))
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        return GetArticle.of(article);
+        Boolean isLikedArticle = articleLikesRepository.existsByMember_MemberIdAndArticle(SecurityContextHolder.getContext().getAuthentication().getName(), article);
+        return GetArticle.of(article, isLikedArticle);
     }
 
     public Boolean deleteComment(String articleId, String commentId) {
