@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 
 public record GetArticles(
+        @Schema(description = "기사 ID", example = "1") Long articleId,
         @Schema(description = "기사 제목", example = "기사 제목") String title,
         @Schema(description = "헤드라인", example = "헤드라인") String headLine,
         @Schema(description = "언론사", example = "Chosun") Press press,
@@ -17,12 +18,15 @@ public record GetArticles(
         @Schema(description = "원본 기사의 게시일", example = "2024-10-25T10:00") LocalDateTime publishDate
 ) {
     public static GetArticles of(Article article) {
+        String image = "";
+        if (!article.getImages().isEmpty()) image = article.getImages().get(0);
         return new GetArticles(
+                article.getArticleId(),
                 article.getTitle(),
                 article.getHeadLine(),
                 article.getPress(),
                 article.getCategory(),
-                article.getImages().get(0),
+                image,
                 article.getPublishDate()
         );
     }

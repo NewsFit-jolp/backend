@@ -76,7 +76,7 @@ public class ArticleService {
         return GetArticles.of(article);
     }
 
-    public List<GetArticle> getArticles(String category, String press, int page, int size) {
+    public List<GetArticles> getArticles(String category, String press, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Category categoryEnum = null;
         Press pressEnum = null;
@@ -109,9 +109,9 @@ public class ArticleService {
             articles = articleRepository.findByCategoryAndPress(categoryEnum, pressEnum, pageable);
         }
 
-        List<GetArticle> returnArticles = new ArrayList<>();
+        List<GetArticles> returnArticles = new ArrayList<>();
         for (Article article : articles) {
-            GetArticle getArticle = GetArticle.of(article);
+            GetArticles getArticle = GetArticles.of(article);
             returnArticles.add(getArticle);
         }
 
