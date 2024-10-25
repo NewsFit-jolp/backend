@@ -36,12 +36,18 @@ public class TokenService {
 
     // access 토큰 생성
     public String createAccessToken(MemberDetailsImpl memberDetailsImpl) {
-        return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 8640000000L);
+        return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 1000 * 60 * 10L);
     }
 
     // refresh 토큰 생성
     public String createRefreshToken(MemberDetailsImpl memberDetailsImpl) {
         return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 8640000000L);
+    }
+
+    // access 토큰 재생성
+    public String reissueAccessToken(Authentication auth) {
+        MemberDetailsImpl memberDetailsImpl = ((MemberDetailsImpl) auth.getPrincipal());
+        return createAccessToken(memberDetailsImpl);
     }
 
     // 토큰 생성

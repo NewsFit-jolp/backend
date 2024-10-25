@@ -131,6 +131,16 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "RefreshToken을 이용한 AccessToken 재발급",
+            description = """
+                    RefreshToken을 이용해 AccessToken을 재발급합니다.
+                    """)
+
+    @GetMapping("/reissue")
+    public SuccessResponse<String> reissueToken() {
+        return SuccessResponse.success(memberService.reissueToken());
+    }
+
 
     @Operation(summary = "유저 정보 조회하기",
             description = """
