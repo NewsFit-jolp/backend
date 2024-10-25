@@ -10,6 +10,7 @@ import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
+import com.example.newsfit.global.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -31,6 +32,7 @@ import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final TokenService tokenService;
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -149,5 +151,9 @@ public class MemberService {
 
         }
         return Pair.of(member, false);
+    }
+
+    public String reissueToken() {
+        return tokenService.reissueAccessToken(SecurityContextHolder.getContext().getAuthentication());
     }
 }
