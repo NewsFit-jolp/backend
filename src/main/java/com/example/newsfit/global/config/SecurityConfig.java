@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,7 +39,11 @@ public class SecurityConfig {
     };
 
     private final String[] ArticlePatterns = {
-            "/article/**"
+            "/articles/**"
+    };
+
+    private final String[] CommentAndLike = {
+            "/articles/*/comments/**", "/articles/*/likes/**"
     };
 
 
@@ -51,7 +56,9 @@ public class SecurityConfig {
                         .requestMatchers(BasicPatterns).permitAll()
                         .requestMatchers(securityPatterns).permitAll()
                         .requestMatchers(MemberPatterns).authenticated()
-                        .requestMatchers(ArticlePatterns).permitAll()
+                        .requestMatchers(CommentAndLike).authenticated()
+                        .requestMatchers(HttpMethod.GET, ArticlePatterns).permitAll()
+                        .requestMatchers(ArticlePatterns).hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
