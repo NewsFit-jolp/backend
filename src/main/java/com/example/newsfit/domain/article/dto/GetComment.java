@@ -10,8 +10,7 @@ public record GetComment(
         @Schema(description = "댓글 내용", example = "댓글입니다.") String content,
         @Schema(description = "작성자") String nickName,
         @Schema(description = "좋아요 수") Integer likeCount,
-        @Schema(description = "등록 일자", example = "2024-08-31T12:00:00 000") LocalDateTime createdDate,
-        @Schema(description = "삭제 여부", example = "false") Boolean isDeleted) {
+        @Schema(description = "등록 일자", example = "2024-08-31T12:00:00 000") LocalDateTime createdDate) {
 
     public static GetComment of(Comment comment){
         return new GetComment(
@@ -19,8 +18,7 @@ public record GetComment(
                 comment.getContent(),
                 comment.getMember().getNickname(),
                 comment.getLikeCount(),
-                comment.getCreatedDate(),
-                comment.getIsDeleted()
+                comment.getCreatedDate()
         );
     }
 }
