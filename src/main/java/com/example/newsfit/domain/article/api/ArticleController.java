@@ -45,6 +45,22 @@ public class ArticleController {
         return SuccessResponse.success(articleService.getArticles(category, articleCursor, size));
     }
 
+    @Operation(summary = "뉴스 검색",
+            description = """
+                    뉴스 검색 API입니다.
+
+                    파라미터는 다음과 같습니다.
+                    keyword: 검색하고자 하는 기사의 키워드를 지정합니다.
+                    articleCursor: 조회하고자 하는 페이지의 직전 기사의 아이디입니다.
+                    size: 한 페이지에 포함될 기사의 개수를 지정합니다.
+                    """)
+    @GetMapping("/search")
+    public SuccessResponse<List<GetArticles>> searchArticles(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                                                             @RequestParam(value = "articleCursor", required = false) Long articleCursor,
+                                                             @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        return SuccessResponse.success(articleService.searchArticles(keyword, articleCursor, size));
+    }
+
     @Operation(summary = "뉴스 기사 단건 조회",
             description = """
                     뉴스 기사 단건 조회 API입니다.

@@ -229,7 +229,6 @@ public class ArticleService {
         return true;
     }
 
-
     private List<Article> getArticlesByCursor(Category category, Long articleId, int size) {
         Pageable pageable = PageRequest.of(0, size);
         if (category == null) {
@@ -241,6 +240,25 @@ public class ArticleService {
                     articleRepository.findByCategoryOrderByArticleIdDesc(category, pageable) :
                     articleRepository.findByArticleIdLessThanAndCategoryOrderByArticleIdDesc(articleId, category, pageable);
         }
+    }
+
+    public List<GetArticles> searchArticles(String keyword, Long articleId, int size) {
+        List<Article> articles = searchArticlesByCursor(keyword, articleId, size);
+        List<GetArticles> returnArticles = new ArrayList<>();
+        for (Article article : articles) {
+            GetArticles getArticle = GetArticles.of(article);
+            returnArticles.add(getArticle);
+        }
+
+        return returnArticles;
+    }
+
+    private List<Article> searchArticlesByCursor(String keyword, Long articleId, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return articleId == null ?
+                articleRepository.findAllByTitleOrCategoryContaining(keyword, pageable) :
+                articleRepository.findByTitleOrCategoryContaining(keyword, articleId, pageable);
+
     }
 }
 
