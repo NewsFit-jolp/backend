@@ -76,10 +76,8 @@ public class ArticleService {
         return GetArticles.of(article);
     }
 
-    public List<GetArticles> getArticles(String category, String press, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<GetArticles> getArticles(String category, Long articleCursor, int size) {
         Category categoryEnum = null;
-        Press pressEnum = null;
 
         if (!"allCategory".equalsIgnoreCase(category)) {
             try {
@@ -89,26 +87,7 @@ public class ArticleService {
             }
         }
 
-        if (!"allPress".equalsIgnoreCase(press)) {
-            try {
-                pressEnum = Press.valueOf(press.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return List.of();
-            }
-        }
-
-        List<Article> articles = new ArrayList<>();
-
-        if (categoryEnum == null && pressEnum == null) {
-            articles = articleRepository.findAll(pageable).getContent();
-        } else if (categoryEnum == null) {
-            articles = articleRepository.findByPress(pressEnum, pageable);
-        } else if (pressEnum == null) {
-            articles = articleRepository.findByCategory(categoryEnum, pageable);
-        } else {
-            articles = articleRepository.findByCategoryAndPress(categoryEnum, pressEnum, pageable);
-        }
-
+        List<Article> articles = getArticlesByCursor(categoryEnum, articleCursor, size);
         List<GetArticles> returnArticles = new ArrayList<>();
         for (Article article : articles) {
             GetArticles getArticle = GetArticles.of(article);
@@ -248,6 +227,20 @@ public class ArticleService {
         comment.subLikeCount();
 
         return true;
+    }
+
+
+    private List<Article> getArticlesByCursor(Category category, Long articleId, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        if (category == null) {
+            return articleId == null ?
+                    articleRepository.findAllByOrderByArticleIdDesc(pageable) :
+                    articleRepository.findByArticleIdLessThanOrderByArticleIdDesc(articleId, pageable);
+        } else {
+            return articleId == null ?
+                    articleRepository.findByCategoryOrderByArticleIdDesc(category, pageable) :
+                    articleRepository.findByArticleIdLessThanAndCategoryOrderByArticleIdDesc(articleId, category, pageable);
+        }
     }
 }
 
