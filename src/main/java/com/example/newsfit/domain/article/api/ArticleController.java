@@ -35,16 +35,14 @@ public class ArticleController {
                     
                     파라미터는 다음과 같습니다.
                     category: 조회하고자 하는 기사의 카테고리를 지정합니다.
-                    press: 조회하고자 하는 기사의 언론사를 지정합니다.
-                    page: 페이지 번호를 지정합니다.
+                    articleCursor: 조회하고자 하는 페이지의 직전 기사의 아이디입니다.
                     size: 한 페이지에 포함될 기사의 개수를 지정합니다.
                     """)
     @GetMapping
     public SuccessResponse<List<GetArticles>> getArticle(@RequestParam(value = "category", required = false, defaultValue = "allCategory") String category,
-                                                     @RequestParam(value = "press", required = false, defaultValue = "allPress") String press,
-                                                     @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                                                     @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
-        return SuccessResponse.success(articleService.getArticles(category, press, page, size));
+                                                         @RequestParam(value = "articleCursor", required = false) Long articleCursor,
+                                                         @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        return SuccessResponse.success(articleService.getArticles(category, articleCursor, size));
     }
 
     @Operation(summary = "뉴스 기사 단건 조회",
@@ -115,12 +113,12 @@ public class ArticleController {
     }
 
     @Operation(summary = "댓글 좋아요 취소",
-    description = """
-            댓글 좋아요 취소 API입니다.
-            """)
+            description = """
+                    댓글 좋아요 취소 API입니다.
+                    """)
     @DeleteMapping("/{articleId}/comments/{commentId}/likes")
     public SuccessResponse<Boolean> deleteCommentLikes(@PathVariable("articleId") String articleId,
-                                                     @PathVariable("commentId") String commentId) {
+                                                       @PathVariable("commentId") String commentId) {
         return SuccessResponse.createSuccess(articleService.deleteCommentLikes(articleId, commentId));
     }
 }
