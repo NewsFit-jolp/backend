@@ -227,4 +227,16 @@ public class MemberController {
     public SuccessResponse<Boolean> deleteUser() {
         return SuccessResponse.success(memberService.deleteUser());
     }
+
+    @Operation(summary = "(개발용) 개발용 토큰 발급",
+            description = """
+                    개발용 API입니다. 어드민 토큰을 발급합니다.
+                    
+                    **테스트용으로만 사용해야 합니다.**
+                    
+                    """)
+    @GetMapping("/token")
+    public SuccessResponse<String> getToken() {
+        return SuccessResponse.success(memberService.getAdminToken());
+    }
 }
