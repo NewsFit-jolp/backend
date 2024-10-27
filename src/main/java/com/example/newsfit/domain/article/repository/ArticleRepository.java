@@ -2,6 +2,7 @@ package com.example.newsfit.domain.article.repository;
 
 import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.entity.Category;
+import com.example.newsfit.domain.article.entity.Press;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,13 +15,13 @@ import java.util.List;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 
-    List<Article> findAllByOrderByArticleIdDesc(Pageable pageable);
+    List<Article> findByPressInOrderByArticleIdDesc(List<Press> pressList, Pageable pageable);
 
-    List<Article> findByCategoryOrderByArticleIdDesc(Category category, Pageable pageable);
+    List<Article> findByCategoryAndPressInOrderByArticleIdDesc(Category category, List<Press> pressList, Pageable pageable);
 
-    List<Article> findByArticleIdLessThanOrderByArticleIdDesc(Long ArticleId, Pageable pageable);
+    List<Article> findByArticleIdLessThanAndPressInOrderByArticleIdDesc(Long ArticleId, List<Press> pressList, Pageable pageable);
 
-    List<Article> findByArticleIdLessThanAndCategoryOrderByArticleIdDesc(Long ArticleId, Category category, Pageable pageable);
+    List<Article> findByArticleIdLessThanAndCategoryAndPressInOrderByArticleIdDesc(Long ArticleId, Category category, List<Press> pressList, Pageable pageable);
 
     @Query("SELECT DISTINCT a FROM Article a " +
             "WHERE (a.title LIKE %:keyword% OR CAST(a.category AS string) LIKE %:keyword%) " +

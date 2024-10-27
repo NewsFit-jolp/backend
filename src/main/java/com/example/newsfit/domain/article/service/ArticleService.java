@@ -77,6 +77,9 @@ public class ArticleService {
     }
 
     public List<GetArticles> getArticles(String category, Long articleCursor, int size) {
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         Category categoryEnum = null;
 
         if (!"allCategory".equalsIgnoreCase(category)) {
@@ -87,7 +90,8 @@ public class ArticleService {
             }
         }
 
-        List<Article> articles = getArticlesByCursor(categoryEnum, articleCursor, size);
+        List<Press> preferredPress = member.getPreferredPress();
+        List<Article> articles = getArticlesByCursor(categoryEnum, articleCursor, size, preferredPress);
         List<GetArticles> returnArticles = new ArrayList<>();
         for (Article article : articles) {
             GetArticles getArticle = GetArticles.of(article);
@@ -229,16 +233,16 @@ public class ArticleService {
         return true;
     }
 
-    private List<Article> getArticlesByCursor(Category category, Long articleId, int size) {
+    private List<Article> getArticlesByCursor(Category category, Long articleId, int size, List<Press> preferredPress) {
         Pageable pageable = PageRequest.of(0, size);
         if (category == null) {
             return articleId == null ?
-                    articleRepository.findAllByOrderByArticleIdDesc(pageable) :
-                    articleRepository.findByArticleIdLessThanOrderByArticleIdDesc(articleId, pageable);
+                    articleRepository.findByPressInOrderByArticleIdDesc(preferredPress, pageable) :
+                    articleRepository.findByArticleIdLessThanAndPressInOrderByArticleIdDesc(articleId, preferredPress, pageable);
         } else {
             return articleId == null ?
-                    articleRepository.findByCategoryOrderByArticleIdDesc(category, pageable) :
-                    articleRepository.findByArticleIdLessThanAndCategoryOrderByArticleIdDesc(articleId, category, pageable);
+                    articleRepository.findByCategoryAndPressInOrderByArticleIdDesc(category, preferredPress, pageable) :
+                    articleRepository.findByArticleIdLessThanAndCategoryAndPressInOrderByArticleIdDesc(articleId, category, preferredPress, pageable);
         }
     }
 
