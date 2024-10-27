@@ -39,6 +39,11 @@ public class TokenService {
         return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 1000 * 60 * 10L);
     }
 
+    // 테스트용 토큰 생성
+    public String createAdminAccessToken() {
+        return createToken("admin", Role.ADMIN, 1000 * 60 * 60 * 24 * 365L);
+    }
+
     // refresh 토큰 생성
     public String createRefreshToken(MemberDetailsImpl memberDetailsImpl) {
         return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 8640000000L);

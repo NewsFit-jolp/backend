@@ -156,4 +156,20 @@ public class MemberService {
     public String reissueToken() {
         return tokenService.reissueAccessToken(SecurityContextHolder.getContext().getAuthentication());
     }
+
+    public String getAdminToken() {
+        Member admin = memberRepository.findByMemberId("admin").orElse(null);
+
+        if (admin == null) {
+            admin = Member.builder()
+                    .memberId("admin")
+                    .email("jolup.newsfit@gmail.com")
+                    .nickname("관리자")
+                    .role(Role.ADMIN)
+                    .build();
+            memberRepository.save(admin);
+        }
+
+        return tokenService.createAdminAccessToken();
+    }
 }

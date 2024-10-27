@@ -1,6 +1,7 @@
 package com.example.newsfit.global.config;
 
 
+import com.example.newsfit.domain.member.entity.Role;
 import com.example.newsfit.global.jwt.JwtAuthenticationFilter;
 import com.example.newsfit.global.jwt.TokenService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -55,10 +56,11 @@ public class SecurityConfig {
                         .requestMatchers(SwaggerPatterns).permitAll()
                         .requestMatchers(BasicPatterns).permitAll()
                         .requestMatchers(securityPatterns).permitAll()
+                        .requestMatchers("/member/token").permitAll() // 나중에 빼야함
                         .requestMatchers(MemberPatterns).authenticated()
                         .requestMatchers(CommentAndLike).authenticated()
                         .requestMatchers(HttpMethod.GET, ArticlePatterns).permitAll()
-                        .requestMatchers(ArticlePatterns).hasRole("ADMIN")
+                        .requestMatchers(ArticlePatterns).hasAuthority("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
