@@ -15,8 +15,8 @@ public record GetMemberInfo(
         ) {
     public static GetMemberInfo of(Member member) {
         return new GetMemberInfo(
-                member.getEmail(),
                 member.getNickname(),
+                member.getEmail(),
                 member.getProfileImage(),
                 member.getPhone(),
                 member.getBirth(),
