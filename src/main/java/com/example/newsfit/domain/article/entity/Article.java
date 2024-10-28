@@ -24,6 +24,7 @@ public class Article extends BaseEntity {
     private Long articleId;
 
     private String title;
+    @Lob
     private String content;
 
     @ElementCollection
@@ -56,6 +57,10 @@ public class Article extends BaseEntity {
         this.publishDate = publishDate;
         this.articleSource = articleSource;
         this.headLine = headLine;
+    }
+
+    public void summaryArticle(String summary){
+        this.content = summary;
     }
 
     public void addLikeCount() {
