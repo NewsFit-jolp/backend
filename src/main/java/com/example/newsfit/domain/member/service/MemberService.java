@@ -163,7 +163,7 @@ public class MemberService {
         if (admin == null) {
             admin = Member.builder()
                     .memberId("admin")
-                    .email("jolup.newsfit@gmail.com")
+                    .email("jolup.newsfit@admin.com")
                     .nickname("관리자")
                     .role(Role.ADMIN)
                     .build();
