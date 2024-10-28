@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(MemberPatterns).authenticated()
                         .requestMatchers(CommentAndLike).authenticated()
                         .requestMatchers(HttpMethod.GET, ArticlePatterns).permitAll()
-                        .requestMatchers(ArticlePatterns).hasAuthority("ADMIN")
+                        // .requestMatchers(ArticlePatterns).hasAuthority("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService), UsernamePasswordAuthenticationFilter.class)
