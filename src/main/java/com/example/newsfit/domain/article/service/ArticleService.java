@@ -4,10 +4,7 @@ import com.example.newsfit.domain.article.dto.GetArticle;
 import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.entity.*;
-import com.example.newsfit.domain.article.repository.ArticleLikesRepository;
-import com.example.newsfit.domain.article.repository.ArticleRepository;
-import com.example.newsfit.domain.article.repository.CommentLikesRepository;
-import com.example.newsfit.domain.article.repository.CommentRepository;
+import com.example.newsfit.domain.article.repository.*;
 import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
@@ -40,6 +37,7 @@ public class ArticleService {
     private final CommentRepository commentRepository;
     private final ArticleLikesRepository articleLikesRepository;
     private final CommentLikesRepository commentLikesRepository;
+    private final ArticleSourceRepository articleSourceRepository;
 
     public GetArticles postArticle(String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -262,7 +260,15 @@ public class ArticleService {
         return articleId == null ?
                 articleRepository.findAllByTitleOrCategoryContaining(keyword, pageable) :
                 articleRepository.findByTitleOrCategoryContaining(keyword, articleId, pageable);
+    }
 
+    public String getArticleSource(String articleId){
+        Article article = articleRepository.findById(Long.parseLong(articleId))
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+
+        String url = article.getArticleSource();
+        ArticleSource articleSource = articleSourceRepository.findByUrl(url);
+        return articleSource.getContent();
     }
 }
 
