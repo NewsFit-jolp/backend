@@ -3,26 +3,33 @@ package com.example.newsfit.domain.article.service;
 import com.example.newsfit.domain.article.dto.GetArticle;
 import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
+import com.example.newsfit.domain.article.dto.LangChainRequest;
 import com.example.newsfit.domain.article.entity.*;
 import com.example.newsfit.domain.article.repository.*;
 import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.example.newsfit.global.util.Utils.jsonObjectParser;
@@ -38,6 +45,11 @@ public class ArticleService {
     private final ArticleLikesRepository articleLikesRepository;
     private final CommentLikesRepository commentLikesRepository;
     private final ArticleSourceRepository articleSourceRepository;
+
+    private final RestTemplate restTemplate;
+
+    @Value("${cloud.aws.lambda.langchain.endpoint}")
+    private String langChainEndpoint;
 
     public GetArticles postArticle(String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -128,12 +140,43 @@ public class ArticleService {
         return GetComment.of(commentRepository.save(comment));
     }
 
-    public GetArticle getArticle(String articleId) {
+    public GetArticle getArticle(String articleId) throws JsonProcessingException {
         Article article = articleRepository.findById(Long.parseLong(articleId))
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
+        if (article.getContent() == null) {
+            article.summaryArticle(summaryArticle(article));
+        }
+
         Boolean isLikedArticle = articleLikesRepository.existsByMember_MemberIdAndArticle(SecurityContextHolder.getContext().getAuthentication().getName(), article);
         return GetArticle.of(article, isLikedArticle);
+    }
+
+    private String summaryArticle(Article article) throws JsonProcessingException {
+        String url = article.getArticleSource();
+        ArticleSource articleSource = articleSourceRepository.findByUrl(url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(new LangChainRequest(articleSource.getContent()));
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                langChainEndpoint,
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String responseBody = response.getBody();
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            return responseMap.get("content").toString();
+        } else {
+            throw new RuntimeException("Failed to send POST request: " + response.getStatusCode());
+        }
     }
 
     public Boolean deleteComment(String articleId, String commentId) {
@@ -260,15 +303,6 @@ public class ArticleService {
         return articleId == null ?
                 articleRepository.findAllByTitleOrCategoryContaining(keyword, pageable) :
                 articleRepository.findByTitleOrCategoryContaining(keyword, articleId, pageable);
-    }
-
-    public String getArticleSource(String articleId){
-        Article article = articleRepository.findById(Long.parseLong(articleId))
-                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
-
-        String url = article.getArticleSource();
-        ArticleSource articleSource = articleSourceRepository.findByUrl(url);
-        return articleSource.getContent();
     }
 }
 
