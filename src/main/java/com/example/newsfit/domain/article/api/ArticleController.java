@@ -137,4 +137,14 @@ public class ArticleController {
                                                        @PathVariable("commentId") String commentId) {
         return SuccessResponse.createSuccess(articleService.deleteCommentLikes(articleId, commentId));
     }
+
+    @Operation(summary = "원본 기사 조회",
+            description = """
+                    원본 기사 조회 API입니다.
+                    """)
+    @GetMapping("/source/{articleId}")
+    public SuccessResponse<String> getArticleSource(
+            @PathVariable("articleId") String articleId){
+        return SuccessResponse.success(articleService.getArticleSource(articleId));
+    }
 }

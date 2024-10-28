@@ -1,7 +1,6 @@
 package com.example.newsfit.domain.article.dto;
 
 import com.example.newsfit.domain.article.entity.Article;
-import com.example.newsfit.domain.article.entity.Category;
 import com.example.newsfit.domain.article.entity.Comment;
 import com.example.newsfit.domain.article.entity.Press;
 import io.swagger.v3.oas.annotations.media.Schema;
