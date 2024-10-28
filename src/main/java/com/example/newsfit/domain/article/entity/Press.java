@@ -99,7 +99,7 @@ public enum Press {
         전주MBC,
         CJB청주방송,
         JIBS,
-        kbc광주방송,
+        KBC광주방송,
 
         // 포토
         신화사,
