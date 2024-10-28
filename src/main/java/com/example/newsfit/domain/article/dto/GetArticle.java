@@ -14,7 +14,7 @@ public record GetArticle(
         @Schema(description = "내용") String content,
         @Schema(description = "이미지") List<String> images,
         @Schema(description = "언론사") Press press,
-        @Schema(description = "카테고리") Category category,
+        @Schema(description = "카테고리") String category,
         @Schema(description = "댓글") List<GetComment> comment,
         @Schema(description = "좋아요 수") Integer likeCount,
         @Schema(description = "내가 좋아요했는지 여부") Boolean likedArticle
@@ -37,7 +37,7 @@ public record GetArticle(
                 article.getContent(),
                 article.getImages(),
                 article.getPress(),
-                article.getCategory(),
+                article.getCategory().toString(),
                 getComments(article),
                 article.getLikeCount(),
                 isLikedArticle

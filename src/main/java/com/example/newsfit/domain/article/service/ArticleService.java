@@ -47,7 +47,7 @@ public class ArticleService {
         String title = (String) jsonObject.get("title");
         String content = (String) jsonObject.get("content");
         Press press = Press.valueOf(((String) jsonObject.get("press")).toUpperCase());
-        Category category = Category.valueOf(((String) jsonObject.get("category")).toUpperCase());
+        Category category = Category.fromDisplayName((String) jsonObject.get("category"));
         JSONArray imageArray = (JSONArray) jsonObject.get("image");
         List<String> images = new ArrayList<>();
         String articleSource = (String) jsonObject.get("articleSource");
