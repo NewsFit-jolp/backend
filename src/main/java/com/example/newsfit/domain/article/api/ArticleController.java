@@ -5,6 +5,7 @@ import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
 import com.example.newsfit.domain.article.service.ArticleService;
 import com.example.newsfit.global.response.SuccessResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +68,7 @@ public class ArticleController {
                     """)
 
     @GetMapping("/{articleId}")
-    public SuccessResponse<GetArticle> getArticle(@PathVariable String articleId) {
+    public SuccessResponse<GetArticle> getArticle(@PathVariable String articleId) throws JsonProcessingException {
         return SuccessResponse.success(articleService.getArticle(articleId));
     }
 
@@ -136,15 +137,5 @@ public class ArticleController {
     public SuccessResponse<Boolean> deleteCommentLikes(@PathVariable("articleId") String articleId,
                                                        @PathVariable("commentId") String commentId) {
         return SuccessResponse.createSuccess(articleService.deleteCommentLikes(articleId, commentId));
-    }
-
-    @Operation(summary = "원본 기사 조회",
-            description = """
-                    원본 기사 조회 API입니다.
-                    """)
-    @GetMapping("/source/{articleId}")
-    public SuccessResponse<String> getArticleSource(
-            @PathVariable("articleId") String articleId){
-        return SuccessResponse.success(articleService.getArticleSource(articleId));
     }
 }
