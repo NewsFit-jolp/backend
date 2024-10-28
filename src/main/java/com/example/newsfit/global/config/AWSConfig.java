@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class AWSConfig {
@@ -27,6 +28,10 @@ public class AWSConfig {
     @Value("${cloud.aws.dynamodb.endpoint}")
     private String endpoint;
 
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
