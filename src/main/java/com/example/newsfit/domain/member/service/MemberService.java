@@ -98,14 +98,14 @@ public class MemberService {
     }
 
     @Transactional
-    public Boolean deleteMember() {
+    public Boolean deleteMember() throws JsonProcessingException {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         member.deleteMember();
-
+        deleteMemberForRecommender(member.getId());
         return true;
     }
 
@@ -124,13 +124,14 @@ public class MemberService {
     }
 
     @Transactional
-    public Boolean deleteUser() {
+    public Boolean deleteUser() throws JsonProcessingException {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         memberRepository.delete(member);
+        deleteMemberForRecommender(member.getId());
 
         return true;
     }
@@ -205,6 +206,29 @@ public class MemberService {
             return responseMap.get("status").equals("new user added");
         } else {
             throw new RuntimeException("Failed to send POST request: " + response.getStatusCode());
+        }
+    }
+
+    private void deleteMemberForRecommender(Long memberId) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = String.format("{ \"user_id\": %d }", memberId);
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                recommenderEndpoint + "/delete-user",
+                HttpMethod.DELETE,
+                request,
+                String.class
+        );
+
+        System.out.println("response.getBody() = " + response.getBody());
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Failed to send Delete request: " + response.getStatusCode());
         }
     }
 }

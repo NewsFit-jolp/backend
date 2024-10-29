@@ -190,7 +190,7 @@ public class MemberController {
                     회원 탈퇴를 진행합니다.
                     """)
     @DeleteMapping("/withdraw")
-    public SuccessResponse<Boolean> deleteMember() {
+    public SuccessResponse<Boolean> deleteMember() throws JsonProcessingException {
         return SuccessResponse.success(memberService.deleteMember());
     }
 
@@ -225,7 +225,7 @@ public class MemberController {
                     
                     """)
     @DeleteMapping("/delete")
-    public SuccessResponse<Boolean> deleteUser() {
+    public SuccessResponse<Boolean> deleteUser() throws JsonProcessingException {
         return SuccessResponse.success(memberService.deleteUser());
     }
 
