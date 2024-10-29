@@ -1,5 +1,6 @@
 package com.example.newsfit.domain.member.service;
 
+import com.example.newsfit.domain.article.dto.LangChainRequest;
 import com.example.newsfit.domain.member.dto.GetMemberInfo;
 import com.example.newsfit.domain.member.dto.GetPreferredCategories;
 import com.example.newsfit.domain.member.dto.GetPreferredPress;
@@ -11,18 +12,24 @@ import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
 import com.example.newsfit.global.jwt.TokenService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import static com.example.newsfit.global.util.Utils.jsonObjectParser;
 
@@ -33,6 +40,10 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+    private final RestTemplate restTemplate;
+
+    @Value("${recommender.endpoint}")
+    private String recommenderEndpoint;
 
     public GetMemberInfo getMemberInfo() {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -124,7 +135,7 @@ public class MemberService {
         return true;
     }
 
-    public Pair<Member, Boolean> registerMemberIfNeed(MemberDto MemberInfo) {
+    public Pair<Member, Boolean> registerMemberIfNeed(MemberDto MemberInfo) throws JsonProcessingException {
 
         String memberId = MemberInfo.getMemberId();
         String memberEmail = MemberInfo.getEmail();
@@ -146,8 +157,8 @@ public class MemberService {
 
             memberRepository.save(member);
 
+            if (!registerMemberForRecommender(member.getId())) throw new CustomException(ErrorCode.USER_ALREADY_ADDED);
             return Pair.of(member, true);
-
         }
         return Pair.of(member, false);
     }
@@ -170,5 +181,30 @@ public class MemberService {
         }
 
         return tokenService.createAdminAccessToken();
+    }
+
+    private Boolean registerMemberForRecommender(Long memberId) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = String.format("{ \"user_id\": %d }", memberId);
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                recommenderEndpoint + "/new-user",
+                HttpMethod.POST,
+                request,
+                String.class
+        );
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            String responseBody = response.getBody();
+            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+            return responseMap.get("status").equals("new user added");
+        } else {
+            throw new RuntimeException("Failed to send POST request: " + response.getStatusCode());
+        }
     }
 }
