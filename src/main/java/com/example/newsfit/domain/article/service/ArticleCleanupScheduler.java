@@ -21,10 +21,6 @@ public class ArticleCleanupScheduler {
     @Autowired
     private final ArticleRepository articleRepository;
     private final RecommenderUtils recommenderUtils;
-    private final RestTemplate restTemplate;
-
-    @Value("${recommender.endpoint}")
-    private String recommenderEndpoint;
 
     @Scheduled(cron = "0 0 4 * * ?")
     public void cleanup() throws JsonProcessingException {

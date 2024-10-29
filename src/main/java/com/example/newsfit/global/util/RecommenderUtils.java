@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class RecommenderUtils {
 
@@ -59,10 +59,8 @@ public class RecommenderUtils {
                 String.class
         );
 
-        System.out.println("response.getBody() = " + response.getBody());
-
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Failed to send Delete request: " + response.getStatusCode());
+            throw new RuntimeException("Failed to send DELETE request: " + response.getStatusCode());
         }
     }
 
@@ -87,7 +85,7 @@ public class RecommenderUtils {
             Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
             return responseMap.get("status").equals("news deleted");
         } else {
-            throw new RuntimeException("Failed to send POST request: " + response.getStatusCode());
+            throw new RuntimeException("Failed to send DELETE request: " + response.getStatusCode());
         }
 
     }
