@@ -25,7 +25,6 @@ public enum ErrorCode {
     USER_ALREADY_ADDED(409, "C014", "이미 추천 서버에 등록된 유저입니다.");
 
 
-
     private final int status;
     private final String code;
     private final String message;
