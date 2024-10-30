@@ -77,13 +77,14 @@ public class MemberService {
     }
 
     @Transactional
-    public GetPreferredPress putPreferredPress(String requestBody) throws ParseException {
+    public GetPreferredPress putPreferredPress(String requestBody) throws ParseException, JsonProcessingException {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
+        recommenderUtils.putPreferredPress(member, preferredPress);
         member.putPress(preferredPress);
 
         return GetPreferredPress.of(member);
@@ -149,9 +150,7 @@ public class MemberService {
                     .build();
 
             memberRepository.save(member);
-
-            if (!recommenderUtils.registerMember(member.getId()))
-                throw new CustomException(ErrorCode.USER_ALREADY_ADDED);
+            recommenderUtils.registerMember(member.getId());
             return Pair.of(member, true);
         }
         return Pair.of(member, false);

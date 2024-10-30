@@ -181,7 +181,7 @@ public class MemberController {
                     유저 선호 언론사를 수정합니다.
                     """)
     @PutMapping("/press")
-    public SuccessResponse<GetPreferredPress> purPreferredPress(@RequestBody String requestBody) throws ParseException {
+    public SuccessResponse<GetPreferredPress> purPreferredPress(@RequestBody String requestBody) throws ParseException, JsonProcessingException {
         return SuccessResponse.success(memberService.putPreferredPress(requestBody));
     }
 
