@@ -51,9 +51,11 @@ public class MemberController {
 
     @GetMapping("/oauth/kakao")
     public SuccessResponse<TokenResponse> kakaoLogin(@Parameter(name = "code", description = "카카오 인증서버에서 받은 인증 코드", required = true)
-                                                     @RequestParam String code) throws JsonProcessingException {
+                                                     @RequestParam String code,
+                                                     @Parameter(name = "redirect_uri", description = "리다이렉트 uri", required = true)
+                                                     @RequestParam String redirect_uri) throws JsonProcessingException {
 
-        String accessToken = kakaoMemberService.getAccessToken(code);
+        String accessToken = kakaoMemberService.getAccessToken(code, redirect_uri);
 
         Pair<TokenResponse, Boolean> pair = kakaoMemberService.kakaoLogin(accessToken);
 
@@ -62,7 +64,6 @@ public class MemberController {
         } else {
             return SuccessResponse.success(pair.getLeft());
         }
-
     }
 
     @Operation(summary = "구글 인증 서버를 통한 로그인",
@@ -85,9 +86,10 @@ public class MemberController {
 
     @GetMapping("/oauth/google")
     public SuccessResponse<TokenResponse> googleLogin(@Parameter(name = "code", description = "구글 인증서버에서 받은 인증 코드", required = true)
-                                                      @RequestParam String code) throws JsonProcessingException {
-
-        String accessToken = googleMemberService.getAccessToken(code);
+                                                      @RequestParam String code,
+                                                      @Parameter(name = "redirect_uri", description = "리다이렉트 uri", required = true)
+                                                      @RequestParam String redirect_uri) throws JsonProcessingException {
+        String accessToken = googleMemberService.getAccessToken(code, redirect_uri);
         Pair<TokenResponse, Boolean> pair = googleMemberService.googleLogin(accessToken);
 
         if (pair.getRight()) {

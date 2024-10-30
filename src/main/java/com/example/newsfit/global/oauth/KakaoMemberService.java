@@ -31,10 +31,6 @@ public class KakaoMemberService {
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
-    private String clientSecret;
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String kakaoRedirectUri;
 
     public Pair<TokenResponse, Boolean> kakaoLogin(String accessToken) throws JsonProcessingException {
 
@@ -49,7 +45,7 @@ public class KakaoMemberService {
 
 
     // 카카오 엑세스 토큰 발급
-    public String getAccessToken(String code) throws JsonProcessingException {
+    public String getAccessToken(String code, String redirectUri) throws JsonProcessingException {
         String reqUrl = "https://kauth.kakao.com/oauth/token";
 
         RestTemplate rt = new RestTemplate();
@@ -62,7 +58,7 @@ public class KakaoMemberService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
-        params.add("redirect_uri", kakaoRedirectUri);
+        params.add("redirect_uri", redirectUri);
         params.add("code", code);
 
         //http 바디(params)와 http 헤더(headers)를 가진 엔티티

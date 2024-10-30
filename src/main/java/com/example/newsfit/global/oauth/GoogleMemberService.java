@@ -33,11 +33,9 @@ public class GoogleMemberService {
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
-    private String googleRedirectUri;
 
     // 카카오 엑세스 토큰 발급
-    public String getAccessToken(String code) throws JsonProcessingException {
+    public String getAccessToken(String code, String redirectUri) throws JsonProcessingException {
         String reqUrl = "https://oauth2.googleapis.com/token";
 
         RestTemplate rt = new RestTemplate();
@@ -51,7 +49,7 @@ public class GoogleMemberService {
         params.add("code", code);
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("redirect_uri", googleRedirectUri);
+        params.add("redirect_uri", redirectUri);
         params.add("grant_type", "authorization_code");
 
         //http 바디(params)와 http 헤더(headers)를 가진 엔티티
