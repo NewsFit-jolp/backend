@@ -20,7 +20,9 @@ import java.util.List;
 public class Member extends BaseEntity {
 
     @Id
-    @Column(name = "member_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String memberId;
 
     private String nickname;
@@ -58,30 +60,26 @@ public class Member extends BaseEntity {
         preferredCategories = new ArrayList<>();
     }
 
-    public Member putMember(String nickname, String email, String phone,
+    public void putMember(String nickname, String phone,
                             Date birth, Gender gender) {
         this.nickname = nickname;
-        this.email = email;
         this.phone = phone;
         this.birth = birth;
         this.gender = gender;
-        return this;
     }
 
-    public Member putCategories(JSONArray categories) {
+    public void putCategories(JSONArray categories) {
         preferredCategories = new ArrayList<>();
         for (Object category : categories) {
-            preferredCategories.add(Category.valueOf(((String) category).toUpperCase()));
+            preferredCategories.add(Category.fromDisplayName((String) category));
         }
-        return this;
     }
 
-    public Member putPress(JSONArray presses) {
+    public void putPress(JSONArray presses) {
         preferredPress = new ArrayList<>();
         for (Object press : presses) {
             preferredPress.add(Press.valueOf(((String) press).toUpperCase()));
         }
-        return this;
     }
 
     public void deleteMember() {

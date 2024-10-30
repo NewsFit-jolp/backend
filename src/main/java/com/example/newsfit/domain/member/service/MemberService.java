@@ -49,14 +49,13 @@ public class MemberService {
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         String name = (String) jsonObject.get("name");
-        String email = (String) jsonObject.get("email");
         String phone = (String) jsonObject.get("phone");
         Gender gender = Gender.valueOf((String) jsonObject.get("gender"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Date birth = formatter.parse((String) jsonObject.get("birth"));
 
-        member.putMember(name, email, phone, birth, gender);
+        member.putMember(name, phone, birth, gender);
 
         return GetMemberInfo.of(member);
     }
