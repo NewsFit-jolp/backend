@@ -53,7 +53,7 @@ public class MemberService {
 
         String name = (String) jsonObject.get("name");
         String phone = (String) jsonObject.get("phone");
-        Gender gender = Gender.valueOf((String) jsonObject.get("gender"));
+        Gender gender = Gender.valueOf(((String) jsonObject.get("gender")).toUpperCase());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Date birth = formatter.parse((String) jsonObject.get("birth"));
