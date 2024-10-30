@@ -158,7 +158,6 @@ public class MemberController {
                     유저 정보를 수정합니다.
                     수정 가능한 항목들
                     - 이름
-                    - 이메일
                     - 전화번호
                     - 성별
                     - 생일
