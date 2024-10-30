@@ -64,13 +64,14 @@ public class MemberService {
     }
 
     @Transactional
-    public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException {
+    public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException, JsonProcessingException {
         Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         JSONArray preferredCategories = (JSONArray) jsonObject.get("preferredCategories");
+        recommenderUtils.putPreferredCategories(member, preferredCategories);
         member.putCategories(preferredCategories);
 
         return GetPreferredCategories.of(member);

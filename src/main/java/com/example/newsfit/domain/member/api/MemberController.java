@@ -172,7 +172,7 @@ public class MemberController {
                     유저 선호 주제를 수정합니다.
                     """)
     @PutMapping("/categories")
-    public SuccessResponse<GetPreferredCategories> putPreferredCategories(@RequestBody String requestBody) throws ParseException {
+    public SuccessResponse<GetPreferredCategories> putPreferredCategories(@RequestBody String requestBody) throws ParseException, JsonProcessingException {
         return SuccessResponse.success(memberService.putPreferredCategories(requestBody));
     }
 

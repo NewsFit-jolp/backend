@@ -1,5 +1,6 @@
 package com.example.newsfit.global.util;
 
+import com.example.newsfit.domain.article.entity.Category;
 import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.domain.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,6 +49,22 @@ public class RecommenderUtils {
             if (!preferredPress.contains(Press.valueOf(String.valueOf(press)))) {
                 String requestBody = String.format("{ \"user_id\": %d, \"publisher\": \"%s\", \"action\": \"%s\" }", member.getId(), press, "add");
                 requestRecommender(requestBody, "/user-publisher", HttpMethod.POST);
+            }
+        }
+    }
+
+    public void putPreferredCategories(Member member, JSONArray categoryList) throws JsonProcessingException {
+        List<Category> preferredCategory = member.getPreferredCategories();
+        for (Category category : preferredCategory) {
+            if (!categoryList.contains(category.toString())) {
+                String requestBody = String.format("{ \"user_id\": %d, \"category\": \"%s\", \"action\": \"%s\" }", member.getId(), category, "delete");
+                requestRecommender(requestBody, "/user-category", HttpMethod.POST);
+            }
+        }
+        for (Object category : categoryList) {
+            if (!preferredCategory.contains(Category.fromDisplayName((String) category))) {
+                String requestBody = String.format("{ \"user_id\": %d, \"category\": \"%s\", \"action\": \"%s\" }", member.getId(), category, "add");
+                requestRecommender(requestBody, "/user-category", HttpMethod.POST);
             }
         }
     }
