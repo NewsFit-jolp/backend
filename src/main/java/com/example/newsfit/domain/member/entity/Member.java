@@ -60,29 +60,26 @@ public class Member extends BaseEntity {
         preferredCategories = new ArrayList<>();
     }
 
-    public Member putMember(String nickname, String phone,
+    public void putMember(String nickname, String phone,
                             Date birth, Gender gender) {
         this.nickname = nickname;
         this.phone = phone;
         this.birth = birth;
         this.gender = gender;
-        return this;
     }
 
-    public Member putCategories(JSONArray categories) {
+    public void putCategories(JSONArray categories) {
         preferredCategories = new ArrayList<>();
         for (Object category : categories) {
             preferredCategories.add(Category.fromDisplayName((String) category));
         }
-        return this;
     }
 
-    public Member putPress(JSONArray presses) {
+    public void putPress(JSONArray presses) {
         preferredPress = new ArrayList<>();
         for (Object press : presses) {
             preferredPress.add(Press.valueOf(((String) press).toUpperCase()));
         }
-        return this;
     }
 
     public void deleteMember() {
