@@ -36,19 +36,19 @@ public class RecommenderUtils {
         requestRecommender(requestBody, "delete-news", HttpMethod.DELETE);
     }
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                recommenderEndpoint + "/delete-news",
-                HttpMethod.DELETE,
-                request,
-                String.class
-        );
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            String responseBody = response.getBody();
-            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
-            return responseMap.get("status").equals("news deleted");
-        } else {
-            throw new RuntimeException("Failed to send DELETE request: " + response.getStatusCode());
+    public void putPreferredPress(Member member, JSONArray pressList) throws JsonProcessingException {
+        List<Press> preferredPress = member.getPreferredPress();
+        for (Press press : preferredPress) {
+            if (!pressList.contains(press.name())) {
+                String requestBody = String.format("{ \"user_id\": %d, \"publisher\": \"%s\", \"action\": \"%s\" }", member.getId(), press, "delete");
+                requestRecommender(requestBody, "/user-publisher", HttpMethod.POST);
+            }
+        }
+        for (Object press : pressList) {
+            if (!preferredPress.contains(Press.valueOf(String.valueOf(press)))) {
+                String requestBody = String.format("{ \"user_id\": %d, \"publisher\": \"%s\", \"action\": \"%s\" }", member.getId(), press, "add");
+                requestRecommender(requestBody, "/user-publisher", HttpMethod.POST);
+            }
         }
     }
 
