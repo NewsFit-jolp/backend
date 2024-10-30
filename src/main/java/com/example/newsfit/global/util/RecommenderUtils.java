@@ -86,4 +86,10 @@ public class RecommenderUtils {
             throw new RuntimeException("Failed to send request: " + response.getStatusCode());
         }
     }
+
+    public String rateArticle(Long articleId, Long memberId, int preference) throws JsonProcessingException {
+        String requestBody = String.format("{ \"user_id\": %d, \"news_id\": \"%s\", \"preference\": \"%d\" }", memberId, articleId, preference);
+        requestRecommender(requestBody, "/receive-feedback", HttpMethod.POST);
+        return "success";
+    }
 }
