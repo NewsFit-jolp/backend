@@ -10,6 +10,7 @@ import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
+import com.example.newsfit.global.util.RecommenderUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class ArticleService {
     private final ArticleSourceRepository articleSourceRepository;
 
     private final RestTemplate restTemplate;
+    private final RecommenderUtils recommenderUtils;
 
     @Value("${cloud.aws.lambda.langchain.endpoint}")
     private String langChainEndpoint;
@@ -303,6 +305,16 @@ public class ArticleService {
         return articleId == null ?
                 articleRepository.findAllByTitleOrCategoryContaining(keyword, pageable) :
                 articleRepository.findByTitleOrCategoryContaining(keyword, articleId, pageable);
+    }
+
+    public String rateArticle(Long articleId, String requestBody) throws ParseException, JsonProcessingException {
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+        Integer preference = (Integer) jsonObject.get("preference");
+
+        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return recommenderUtils.rateArticle(articleId, member.getId(), preference);
     }
 }
 
