@@ -4,6 +4,8 @@ import com.example.newsfit.domain.article.entity.Category;
 import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.domain.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import java.util.List;
 public class RecommenderUtils {
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${recommender.endpoint}")
     private String recommenderEndpoint;
@@ -69,7 +72,18 @@ public class RecommenderUtils {
         }
     }
 
-    private void requestRecommender(String requestBody, String path, HttpMethod method) throws JsonProcessingException {
+    public String rateArticle(Long articleId, Long memberId, int preference) throws JsonProcessingException {
+        String requestBody = String.format("{ \"user_id\": %d, \"news_id\": \"%s\", \"preference\": \"%d\" }", memberId, articleId, preference);
+        requestRecommender(requestBody, "/receive-feedback", HttpMethod.POST);
+        return "success";
+    }
+
+    public String recommendArticles(Long memberId, int page, int pageSize) throws JsonProcessingException {
+        String path = String.format("/recommend-news?userId=%d&page=%d&pageSize=%d", memberId, page, pageSize);
+        return requestRecommender("", path, HttpMethod.GET);
+    }
+
+    private String requestRecommender(String requestBody, String path, HttpMethod method) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
 
@@ -82,14 +96,14 @@ public class RecommenderUtils {
                 String.class
         );
 
-        if (HttpStatus.OK != response.getStatusCode()) {
+        if (HttpStatus.OK == response.getStatusCode()) {
+            String responseBody = response.getBody();
+            Object json = objectMapper.readValue(responseBody, Object.class);
+            ObjectWriter ow = objectMapper.writerWithDefaultPrettyPrinter();
+            return ow.writeValueAsString(json);
+        } else {
             throw new RuntimeException("Failed to send request: " + response.getStatusCode());
         }
     }
-
-    public String rateArticle(Long articleId, Long memberId, int preference) throws JsonProcessingException {
-        String requestBody = String.format("{ \"user_id\": %d, \"news_id\": \"%s\", \"preference\": \"%d\" }", memberId, articleId, preference);
-        requestRecommender(requestBody, "/receive-feedback", HttpMethod.POST);
-        return "success";
-    }
 }
+
