@@ -10,6 +10,7 @@ import com.example.newsfit.domain.member.entity.Member;
 import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
+import com.example.newsfit.global.util.RecommenderUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class ArticleService {
     private final ArticleSourceRepository articleSourceRepository;
 
     private final RestTemplate restTemplate;
+    private final RecommenderUtils recommenderUtils;
 
     @Value("${cloud.aws.lambda.langchain.endpoint}")
     private String langChainEndpoint;
@@ -87,7 +89,7 @@ public class ArticleService {
     }
 
     public List<GetArticles> getArticles(String category, Long articleCursor, int size) {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Category categoryEnum = null;
@@ -123,7 +125,7 @@ public class ArticleService {
     public GetComment postComment(String articleId, String requestBody) throws ParseException {
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Article article = articleRepository.findById(Long.parseLong(articleId))
@@ -148,7 +150,7 @@ public class ArticleService {
             article.summaryArticle(summaryArticle(article));
         }
 
-        Boolean isLikedArticle = articleLikesRepository.existsByMember_MemberIdAndArticle(SecurityContextHolder.getContext().getAuthentication().getName(), article);
+        Boolean isLikedArticle = articleLikesRepository.existsByMember_OAuthIdAndArticle(SecurityContextHolder.getContext().getAuthentication().getName(), article);
         return GetArticle.of(article, isLikedArticle);
     }
 
@@ -183,7 +185,7 @@ public class ArticleService {
         Comment comment = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!comment.getMember().equals(member)) {
@@ -197,7 +199,7 @@ public class ArticleService {
         Article article = articleRepository.findById(Long.parseLong(articleId))
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
 
@@ -220,7 +222,7 @@ public class ArticleService {
         Article article = articleRepository.findById(Long.parseLong(articleId))
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Optional<Integer> removeLike = articleLikesRepository.removeByMemberAndArticle(member, article);
@@ -238,7 +240,7 @@ public class ArticleService {
         Comment comment = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (commentLikesRepository.findByMemberAndComment(member, comment).isPresent()) {
@@ -260,7 +262,7 @@ public class ArticleService {
         Comment comment = commentRepository.findById(Long.parseLong(commentId))
                 .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Optional<Integer> removeLike = commentLikesRepository.removeByMemberAndComment(member, comment);
@@ -303,6 +305,16 @@ public class ArticleService {
         return articleId == null ?
                 articleRepository.findAllByTitleOrCategoryContaining(keyword, pageable) :
                 articleRepository.findByTitleOrCategoryContaining(keyword, articleId, pageable);
+    }
+
+    public String rateArticle(Long articleId, String requestBody) throws ParseException, JsonProcessingException {
+        JSONObject jsonObject = jsonObjectParser(requestBody);
+        Integer preference = (Integer) jsonObject.get("preference");
+
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return recommenderUtils.rateArticle(articleId, member.getId(), preference);
     }
 }
 

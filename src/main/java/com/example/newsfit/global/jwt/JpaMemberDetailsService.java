@@ -22,7 +22,7 @@ public class JpaMemberDetailsService implements UserDetailsService{
     @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String memberId) {
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+        Member member = memberRepository.findByOAuthId(memberId).orElseThrow(
                 () -> new CustomException(USER_NOT_FOUND)
         );
         if (member.getIsDeleted()) throw new CustomAccessDeniedException(WITHDRAWAL_USER);

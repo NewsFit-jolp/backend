@@ -172,7 +172,7 @@ public class MemberController {
                     유저 선호 주제를 수정합니다.
                     """)
     @PutMapping("/categories")
-    public SuccessResponse<GetPreferredCategories> putPreferredCategories(@RequestBody String requestBody) throws ParseException {
+    public SuccessResponse<GetPreferredCategories> putPreferredCategories(@RequestBody String requestBody) throws ParseException, JsonProcessingException {
         return SuccessResponse.success(memberService.putPreferredCategories(requestBody));
     }
 
@@ -181,7 +181,7 @@ public class MemberController {
                     유저 선호 언론사를 수정합니다.
                     """)
     @PutMapping("/press")
-    public SuccessResponse<GetPreferredPress> purPreferredPress(@RequestBody String requestBody) throws ParseException {
+    public SuccessResponse<GetPreferredPress> purPreferredPress(@RequestBody String requestBody) throws ParseException, JsonProcessingException {
         return SuccessResponse.success(memberService.putPreferredPress(requestBody));
     }
 
@@ -190,7 +190,7 @@ public class MemberController {
                     회원 탈퇴를 진행합니다.
                     """)
     @DeleteMapping("/withdraw")
-    public SuccessResponse<Boolean> deleteMember() {
+    public SuccessResponse<Boolean> deleteMember() throws JsonProcessingException {
         return SuccessResponse.success(memberService.deleteMember());
     }
 
@@ -225,7 +225,7 @@ public class MemberController {
                     
                     """)
     @DeleteMapping("/delete")
-    public SuccessResponse<Boolean> deleteUser() {
+    public SuccessResponse<Boolean> deleteUser() throws JsonProcessingException {
         return SuccessResponse.success(memberService.deleteUser());
     }
 

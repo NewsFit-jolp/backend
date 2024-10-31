@@ -11,6 +11,8 @@ import com.example.newsfit.domain.member.repository.MemberRepository;
 import com.example.newsfit.global.error.exception.CustomException;
 import com.example.newsfit.global.error.exception.ErrorCode;
 import com.example.newsfit.global.jwt.TokenService;
+import com.example.newsfit.global.util.RecommenderUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -33,9 +35,10 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+    private final RecommenderUtils recommenderUtils;
 
     public GetMemberInfo getMemberInfo() {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetMemberInfo.of(member);
@@ -43,14 +46,14 @@ public class MemberService {
 
     @Transactional
     public GetMemberInfo putMemberInfo(String requestBody) throws ParseException, java.text.ParseException {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         String name = (String) jsonObject.get("name");
         String phone = (String) jsonObject.get("phone");
-        Gender gender = Gender.valueOf((String) jsonObject.get("gender"));
+        Gender gender = Gender.valueOf(((String) jsonObject.get("gender")).toUpperCase());
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Date birth = formatter.parse((String) jsonObject.get("birth"));
@@ -61,83 +64,86 @@ public class MemberService {
     }
 
     @Transactional
-    public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+    public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException, JsonProcessingException {
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         JSONArray preferredCategories = (JSONArray) jsonObject.get("preferredCategories");
+        recommenderUtils.putPreferredCategories(member, preferredCategories);
         member.putCategories(preferredCategories);
 
         return GetPreferredCategories.of(member);
     }
 
     @Transactional
-    public GetPreferredPress putPreferredPress(String requestBody) throws ParseException {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+    public GetPreferredPress putPreferredPress(String requestBody) throws ParseException, JsonProcessingException {
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
 
         JSONArray preferredPress = (JSONArray) jsonObject.get("preferredPress");
+        recommenderUtils.putPreferredPress(member, preferredPress);
         member.putPress(preferredPress);
 
         return GetPreferredPress.of(member);
     }
 
     @Transactional
-    public Boolean deleteMember() {
+    public Boolean deleteMember() throws JsonProcessingException {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findByOAuthId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         member.deleteMember();
-
+        recommenderUtils.deleteMember(member.getId());
         return true;
     }
 
     public GetPreferredCategories getPreferredCategories() {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetPreferredCategories.of(member);
     }
 
     public GetPreferredPress getPreferredPress() {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetPreferredPress.of(member);
     }
 
     @Transactional
-    public Boolean deleteUser() {
+    public Boolean deleteUser() throws JsonProcessingException {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findByOAuthId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         memberRepository.delete(member);
+        recommenderUtils.deleteMember(member.getId());
 
         return true;
     }
 
-    public Pair<Member, Boolean> registerMemberIfNeed(MemberDto MemberInfo) {
+    public Pair<Member, Boolean> registerMemberIfNeed(MemberDto MemberInfo) throws JsonProcessingException {
 
         String memberId = MemberInfo.getMemberId();
         String memberEmail = MemberInfo.getEmail();
         String memberNickname = MemberInfo.getNickname();
         String memberProfileImage = MemberInfo.getProfileImage();
 
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findByOAuthId(memberId)
                 .orElse(null);
 
         if (member == null) {
 
             member = Member.builder()
-                    .memberId(memberId)
+                    .OAuthId(memberId)
                     .email(memberEmail)
                     .nickname(memberNickname)
                     .profileImage(memberProfileImage)
@@ -145,9 +151,8 @@ public class MemberService {
                     .build();
 
             memberRepository.save(member);
-
+            recommenderUtils.registerMember(member.getId());
             return Pair.of(member, true);
-
         }
         return Pair.of(member, false);
     }
@@ -157,11 +162,11 @@ public class MemberService {
     }
 
     public String getAdminToken() {
-        Member admin = memberRepository.findByMemberId("admin").orElse(null);
+        Member admin = memberRepository.findByOAuthId("admin").orElse(null);
 
         if (admin == null) {
             admin = Member.builder()
-                    .memberId("admin")
+                    .OAuthId("admin")
                     .email("jolup.newsfit@admin.com")
                     .nickname("관리자")
                     .role(Role.ADMIN)

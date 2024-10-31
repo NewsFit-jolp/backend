@@ -21,8 +21,8 @@ public enum ErrorCode {
     DUPLICATED_ARTICLE_LIKE(400, "C010", "이미 좋아요를 누른 게시글입니다."),
     ARTICLE_LIKE_NOT_FOUND(404, "C011", "좋아요를 누르지 않은 게시글입니다."),
     DUPLICATED_COMMENT_LIKE(400, "C012", "이미 좋아요를 누른 댓글입니다."),
-    TOKEN_EXPIRED(409, "C013", "만료된 토큰입니다.");
-
+    TOKEN_EXPIRED(409, "C013", "만료된 토큰입니다."),
+    USER_ALREADY_ADDED(409, "C014", "이미 추천 서버에 등록된 유저입니다.");
 
 
     private final int status;

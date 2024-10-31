@@ -20,11 +20,12 @@ public class Article extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "article_id")
     private Long articleId;
 
     private String title;
+
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ElementCollection

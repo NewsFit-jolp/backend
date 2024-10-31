@@ -49,7 +49,7 @@ public class ArticleController {
     @Operation(summary = "뉴스 검색",
             description = """
                     뉴스 검색 API입니다.
-
+                    
                     파라미터는 다음과 같습니다.
                     keyword: 검색하고자 하는 기사의 키워드를 지정합니다.
                     articleCursor: 조회하고자 하는 페이지의 직전 기사의 아이디입니다.
@@ -119,23 +119,34 @@ public class ArticleController {
         return SuccessResponse.success(articleService.deleteArticleLikes(articleId));
     }
 
-    @Operation(summary = "댓글 좋아요",
+//    @Operation(summary = "댓글 좋아요",
+//            description = """
+//                    댓글 좋아요 API입니다.
+//                    """)
+//    @PostMapping("/{articleId}/comments/{commentId}/likes")
+//    public SuccessResponse<Boolean> postCommentLikes(@PathVariable("articleId") String articleId,
+//                                                     @PathVariable("commentId") String commentId) {
+//        return SuccessResponse.createSuccess(articleService.postCommentLikes(articleId, commentId));
+//    }
+//
+//    @Operation(summary = "댓글 좋아요 취소",
+//            description = """
+//                    댓글 좋아요 취소 API입니다.
+//                    """)
+//    @DeleteMapping("/{articleId}/comments/{commentId}/likes")
+//    public SuccessResponse<Boolean> deleteCommentLikes(@PathVariable("articleId") String articleId,
+//                                                       @PathVariable("commentId") String commentId) {
+//        return SuccessResponse.createSuccess(articleService.deleteCommentLikes(articleId, commentId));
+//    }
+
+    @Operation(summary = "기사 선호도 평가",
             description = """
-                    댓글 좋아요 API입니다.
+                    기사 선호도 평가 API입니다.
                     """)
-    @PostMapping("/{articleId}/comments/{commentId}/likes")
-    public SuccessResponse<Boolean> postCommentLikes(@PathVariable("articleId") String articleId,
-                                                     @PathVariable("commentId") String commentId) {
-        return SuccessResponse.createSuccess(articleService.postCommentLikes(articleId, commentId));
+    @PostMapping("/{articleId}/rate")
+    public SuccessResponse<String> rateArticle(@PathVariable("articleId") String articleId,
+                                               @RequestBody String requestBody) throws ParseException, JsonProcessingException {
+        return SuccessResponse.createSuccess(articleService.rateArticle(Long.valueOf(articleId), requestBody));
     }
 
-    @Operation(summary = "댓글 좋아요 취소",
-            description = """
-                    댓글 좋아요 취소 API입니다.
-                    """)
-    @DeleteMapping("/{articleId}/comments/{commentId}/likes")
-    public SuccessResponse<Boolean> deleteCommentLikes(@PathVariable("articleId") String articleId,
-                                                       @PathVariable("commentId") String commentId) {
-        return SuccessResponse.createSuccess(articleService.deleteCommentLikes(articleId, commentId));
-    }
 }

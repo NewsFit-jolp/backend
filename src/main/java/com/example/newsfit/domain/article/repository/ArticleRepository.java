@@ -44,9 +44,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             Pageable pageable
     );
 
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM Article a " +
+    @Query("SELECT a FROM Article a " +
             "WHERE a.createdDate < :yesterday")
-    void deleteOldArticle(@Param("yesterday") LocalDateTime yesterday);
+    List<Article> findOldArticle(@Param("yesterday") LocalDateTime yesterday);
 }
