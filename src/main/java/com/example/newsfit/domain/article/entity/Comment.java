@@ -28,7 +28,7 @@ public class Comment extends BaseEntity {
     private Article article;
 
     @ManyToOne
-    @JoinColumn(name = "member")
+    @JoinColumn(name = "member_id")
     @JsonIgnore
     private Member member;
 

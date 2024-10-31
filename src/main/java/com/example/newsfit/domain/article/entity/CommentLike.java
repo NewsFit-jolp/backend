@@ -4,6 +4,7 @@ import com.example.newsfit.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 @Entity
 @NoArgsConstructor
@@ -14,6 +15,7 @@ public class CommentLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @JsonIgnore
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
