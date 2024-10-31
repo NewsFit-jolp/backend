@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ArticleLikesRepository extends JpaRepository<ArticleLike, Long> {
     Optional<ArticleLike> findByMemberAndArticle(Member member, Article article);
 
-    Boolean existsByMember_MemberIdAndArticle(String memberId, Article article);
+    Boolean existsByMember_OAuthIdAndArticle(String OAuthId, Article article);
 
     Optional<Integer> removeByMemberAndArticle(Member member, Article article);
 }

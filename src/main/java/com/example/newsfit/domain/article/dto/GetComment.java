@@ -22,7 +22,7 @@ public record GetComment(
                 comment.getMember().getNickname(),
                 comment.getLikeCount(),
                 comment.getCreatedDate(),
-                comment.getMember().getMemberId().equals(memberId)
+                comment.getMember().getOAuthId().equals(memberId)
         );
     }
 }

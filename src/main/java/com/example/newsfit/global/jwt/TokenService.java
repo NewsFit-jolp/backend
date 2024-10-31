@@ -36,7 +36,7 @@ public class TokenService {
 
     // access 토큰 생성
     public String createAccessToken(MemberDetailsImpl memberDetailsImpl) {
-        return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 1000 * 60 * 10L);
+        return createToken(memberDetailsImpl.member().getOAuthId(), memberDetailsImpl.member().getRole(), 1000 * 60 * 10L);
     }
 
     // 테스트용 토큰 생성
@@ -46,7 +46,7 @@ public class TokenService {
 
     // refresh 토큰 생성
     public String createRefreshToken(MemberDetailsImpl memberDetailsImpl) {
-        return createToken(memberDetailsImpl.member().getMemberId(), memberDetailsImpl.member().getRole(), 8640000000L);
+        return createToken(memberDetailsImpl.member().getOAuthId(), memberDetailsImpl.member().getRole(), 8640000000L);
     }
 
     // access 토큰 재생성
@@ -89,7 +89,7 @@ public class TokenService {
         token = token.split(" ")[1].trim();
         String memberId = getMemberId(token);
         // 프로바이더+이메일로 멤버 인스턴스를 얻음
-        return memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return memberRepository.findByOAuthId(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     // Authorization Header를 통해 인증을 한다.

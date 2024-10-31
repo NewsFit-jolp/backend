@@ -23,7 +23,7 @@ public class MemberDto {
 
     public static MemberDto of(Member member) {
         return MemberDto.builder()
-                .memberId(member.getMemberId())
+                .memberId(member.getOAuthId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .profileImage(member.getProfileImage())

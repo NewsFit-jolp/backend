@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
 
-    Optional<Member> findByMemberId(String member);
+    Optional<Member> findByOAuthId(String member);
 
 }

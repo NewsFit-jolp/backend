@@ -38,7 +38,7 @@ public class MemberService {
     private final RecommenderUtils recommenderUtils;
 
     public GetMemberInfo getMemberInfo() {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetMemberInfo.of(member);
@@ -46,7 +46,7 @@ public class MemberService {
 
     @Transactional
     public GetMemberInfo putMemberInfo(String requestBody) throws ParseException, java.text.ParseException {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -65,7 +65,7 @@ public class MemberService {
 
     @Transactional
     public GetPreferredCategories putPreferredCategories(String requestBody) throws ParseException, JsonProcessingException {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -79,7 +79,7 @@ public class MemberService {
 
     @Transactional
     public GetPreferredPress putPreferredPress(String requestBody) throws ParseException, JsonProcessingException {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         JSONObject jsonObject = jsonObjectParser(requestBody);
@@ -95,7 +95,7 @@ public class MemberService {
     public Boolean deleteMember() throws JsonProcessingException {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findByOAuthId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         member.deleteMember();
@@ -104,14 +104,14 @@ public class MemberService {
     }
 
     public GetPreferredCategories getPreferredCategories() {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetPreferredCategories.of(member);
     }
 
     public GetPreferredPress getPreferredPress() {
-        Member member = memberRepository.findByMemberId(SecurityContextHolder.getContext().getAuthentication().getName())
+        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return GetPreferredPress.of(member);
@@ -121,7 +121,7 @@ public class MemberService {
     public Boolean deleteUser() throws JsonProcessingException {
         String memberId = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findByOAuthId(memberId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         memberRepository.delete(member);
@@ -137,13 +137,13 @@ public class MemberService {
         String memberNickname = MemberInfo.getNickname();
         String memberProfileImage = MemberInfo.getProfileImage();
 
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findByOAuthId(memberId)
                 .orElse(null);
 
         if (member == null) {
 
             member = Member.builder()
-                    .memberId(memberId)
+                    .OAuthId(memberId)
                     .email(memberEmail)
                     .nickname(memberNickname)
                     .profileImage(memberProfileImage)
@@ -162,11 +162,11 @@ public class MemberService {
     }
 
     public String getAdminToken() {
-        Member admin = memberRepository.findByMemberId("admin").orElse(null);
+        Member admin = memberRepository.findByOAuthId("admin").orElse(null);
 
         if (admin == null) {
             admin = Member.builder()
-                    .memberId("admin")
+                    .OAuthId("admin")
                     .email("jolup.newsfit@admin.com")
                     .nickname("관리자")
                     .role(Role.ADMIN)
