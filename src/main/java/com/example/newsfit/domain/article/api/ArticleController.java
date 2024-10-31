@@ -149,4 +149,14 @@ public class ArticleController {
         return SuccessResponse.createSuccess(articleService.rateArticle(Long.valueOf(articleId), requestBody));
     }
 
+    @Operation(summary = "기사 추천",
+            description = """
+                    기사 추천 API입니다.
+                    """)
+    @GetMapping("/recommend")
+    public String recommendArticles(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                                                          @RequestParam(value = "pageSize", required = false, defaultValue = "5") int pageSize) throws JsonProcessingException {
+        return articleService.recommendArticles(page, pageSize);
+    }
+
 }
