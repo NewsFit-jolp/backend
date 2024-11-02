@@ -27,17 +27,17 @@ public class RecommenderUtils {
 
     public void registerMember(Long memberId) throws JsonProcessingException {
         String requestBody = String.format("{ \"user_id\": %d }", memberId);
-        requestRecommender(requestBody, "new-user", HttpMethod.POST);
+        requestRecommender(requestBody, "/new-user", HttpMethod.POST);
     }
 
     public void deleteMember(Long memberId) throws JsonProcessingException {
         String requestBody = String.format("{ \"user_id\": %d }", memberId);
-        requestRecommender(requestBody, "delete-user", HttpMethod.DELETE);
+        requestRecommender(requestBody, "/delete-user", HttpMethod.DELETE);
     }
 
     public void removeOldArticles(Long newsId) throws JsonProcessingException {
         String requestBody = String.format("{ \"news_id\": %d }", newsId);
-        requestRecommender(requestBody, "delete-news", HttpMethod.DELETE);
+        requestRecommender(requestBody, "/delete-news", HttpMethod.DELETE);
     }
 
     public void putPreferredPress(Member member, JSONArray pressList) throws JsonProcessingException {
