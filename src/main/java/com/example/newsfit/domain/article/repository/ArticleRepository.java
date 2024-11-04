@@ -5,11 +5,9 @@ import com.example.newsfit.domain.article.entity.Category;
 import com.example.newsfit.domain.article.entity.Press;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,4 +45,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT a FROM Article a " +
             "WHERE a.createdDate < :yesterday")
     List<Article> findOldArticle(@Param("yesterday") LocalDateTime yesterday);
+
+    @Query("SELECT a FROM Article a ORDER BY a.likeCount DESC")
+    List<Article> findTopArticlesByLikeCount(Pageable pageable);
 }
