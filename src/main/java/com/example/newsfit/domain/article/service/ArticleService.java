@@ -63,7 +63,6 @@ public class ArticleService {
         JSONArray imageArray = (JSONArray) jsonObject.get("image");
         List<String> images = new ArrayList<>();
         String articleSource = (String) jsonObject.get("articleSource");
-        String headLine = (String) jsonObject.get("headLine");
         LocalDateTime publishDate = LocalDateTime.parse((String) jsonObject.get("publishDate"));
 
         if (imageArray != null) {
@@ -79,7 +78,6 @@ public class ArticleService {
                 .category(category)
                 .images(images)
                 .articleSource(articleSource)
-                .headLine(headLine)
                 .publishDate(publishDate)
                 .build();
 
@@ -147,14 +145,15 @@ public class ArticleService {
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
         if (article.getContent() == null) {
-            article.summaryArticle(summaryArticle(article));
+            Map<String, Object> response = summaryArticle(article);
+            article.summaryArticle(response.get("content").toString());
         }
 
         Boolean isLikedArticle = articleLikesRepository.existsByMember_OAuthIdAndArticle(SecurityContextHolder.getContext().getAuthentication().getName(), article);
         return GetArticle.of(article, isLikedArticle);
     }
 
-    private String summaryArticle(Article article) throws JsonProcessingException {
+    private Map<String, Object> summaryArticle(Article article) throws JsonProcessingException {
         String url = article.getArticleSource();
         ArticleSource articleSource = articleSourceRepository.findByUrl(url);
 
@@ -175,7 +174,7 @@ public class ArticleService {
         if (response.getStatusCode() == HttpStatus.OK) {
             String responseBody = response.getBody();
             Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
-            return responseMap.get("content").toString();
+            return responseMap;
         } else {
             throw new RuntimeException("Failed to send POST request: " + response.getStatusCode());
         }
@@ -236,45 +235,45 @@ public class ArticleService {
         return true;
     }
 
-    public Boolean postCommentLikes(String articleId, String commentId) {
-        Comment comment = commentRepository.findById(Long.parseLong(commentId))
-                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
-
-        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        if (commentLikesRepository.findByMemberAndComment(member, comment).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATED_COMMENT_LIKE);
-        }
-
-        CommentLike commentLike = CommentLike.builder()
-                .comment(comment)
-                .member(member)
-                .build();
-
-        commentLikesRepository.save(commentLike);
-        comment.addLikeCount();
-
-        return true;
-    }
-
-    public Boolean deleteCommentLikes(String articleId, String commentId) {
-        Comment comment = commentRepository.findById(Long.parseLong(commentId))
-                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
-
-        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        Optional<Integer> removeLike = commentLikesRepository.removeByMemberAndComment(member, comment);
-
-        if (removeLike.isPresent() && removeLike.get() == 0) {
-            throw new CustomException(ErrorCode.ARTICLE_LIKE_NOT_FOUND);
-        }
-
-        comment.subLikeCount();
-
-        return true;
-    }
+//    public Boolean postCommentLikes(String articleId, String commentId) {
+//        Comment comment = commentRepository.findById(Long.parseLong(commentId))
+//                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+//
+//        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
+//                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+//
+//        if (commentLikesRepository.findByMemberAndComment(member, comment).isPresent()) {
+//            throw new CustomException(ErrorCode.DUPLICATED_COMMENT_LIKE);
+//        }
+//
+//        CommentLike commentLike = CommentLike.builder()
+//                .comment(comment)
+//                .member(member)
+//                .build();
+//
+//        commentLikesRepository.save(commentLike);
+//        comment.addLikeCount();
+//
+//        return true;
+//    }
+//
+//    public Boolean deleteCommentLikes(String articleId, String commentId) {
+//        Comment comment = commentRepository.findById(Long.parseLong(commentId))
+//                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+//
+//        Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
+//                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+//
+//        Optional<Integer> removeLike = commentLikesRepository.removeByMemberAndComment(member, comment);
+//
+//        if (removeLike.isPresent() && removeLike.get() == 0) {
+//            throw new CustomException(ErrorCode.ARTICLE_LIKE_NOT_FOUND);
+//        }
+//
+//        comment.subLikeCount();
+//
+//        return true;
+//    }
 
     private List<Article> getArticlesByCursor(Category category, Long articleId, int size, List<Press> preferredPress) {
         Pageable pageable = PageRequest.of(0, size);
@@ -322,6 +321,21 @@ public class ArticleService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return recommenderUtils.recommendArticles(member.getId(), page, pageSize);
+    }
+
+    public List<GetArticles> getHeadLine() throws JsonProcessingException {
+        Pageable pageable = PageRequest.of(0, 5);
+        List<Article> headLineArticles = articleRepository.findTopArticlesByLikeCount(pageable);
+
+        List<GetArticles> getArticles = new ArrayList<>();
+        for (Article headLineArticle : headLineArticles) {
+            if(headLineArticle.getHeadLine() == null) {
+                Map<String, Object> response = summaryArticle(headLineArticle);
+                headLineArticle.setHeadLine(response.get("subtitle").toString());
+            }
+            getArticles.add(GetArticles.of(headLineArticle));
+        }
+        return getArticles;
     }
 }
 

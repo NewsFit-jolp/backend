@@ -155,8 +155,17 @@ public class ArticleController {
                     """)
     @GetMapping("/recommend")
     public String recommendArticles(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                                                          @RequestParam(value = "pageSize", required = false, defaultValue = "5") int pageSize) throws JsonProcessingException {
+                                    @RequestParam(value = "pageSize", required = false, defaultValue = "5") int pageSize) throws JsonProcessingException {
         return articleService.recommendArticles(page, pageSize);
     }
 
+    @Operation(summary = "헤드라인 조회",
+    description = """
+            헤드라인 기사들을 조회합니다.
+            헤드라인은 데이터베이스에 존재하는 기사들 중 좋아요가 가장 많은 상위 5개의 기사입니다.
+            """)
+    @GetMapping("/headLine")
+    public SuccessResponse<List<GetArticles>> getHeadLine() throws JsonProcessingException {
+        return SuccessResponse.success(articleService.getHeadLine());
+    }
 }
