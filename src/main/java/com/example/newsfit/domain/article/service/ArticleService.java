@@ -83,6 +83,15 @@ public class ArticleService {
 
         articleRepository.save(article);
 
+        try {
+            recommenderUtils.registerArticle(article);
+
+        }
+        catch (JsonProcessingException e) {
+            e.printStackTrace();
+            System.out.println("Failed to register article to recommender system.");
+        }
+
         return GetArticles.of(article);
     }
 

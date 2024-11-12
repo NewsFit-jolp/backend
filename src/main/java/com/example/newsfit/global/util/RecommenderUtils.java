@@ -1,5 +1,6 @@
 package com.example.newsfit.global.util;
 
+import com.example.newsfit.domain.article.entity.Article;
 import com.example.newsfit.domain.article.entity.Category;
 import com.example.newsfit.domain.article.entity.Press;
 import com.example.newsfit.domain.member.entity.Member;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,23 @@ public class RecommenderUtils {
 
     @Value("${recommender.endpoint}")
     private String recommenderEndpoint;
+
+    public void registerArticle(Article article) throws JsonProcessingException {
+
+        JSONObject request = new JSONObject();
+        request.put("news_id", article.getArticleId());
+        request.put("category", article.getCategory().toString());
+        request.put("publisher", article.getPress().toString());
+        request.put("title", article.getTitle());
+        request.put("headLine", article.getTitle());
+        request.put("thumbnail", article.getImages().get(0));
+        request.put("publishDate", article.getPublishDate().toString());
+
+        String requestBody = request.toJSONString();
+
+        requestRecommender(requestBody, "/new-news", HttpMethod.POST);
+
+    }
 
     public void registerMember(Long memberId) throws JsonProcessingException {
         String requestBody = String.format("{ \"user_id\": %d }", memberId);
