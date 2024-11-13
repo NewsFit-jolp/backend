@@ -2,10 +2,7 @@ package com.example.newsfit.domain.article.entity;
 
 import com.example.newsfit.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
@@ -16,6 +13,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor
 public class Article extends BaseEntity {
 
