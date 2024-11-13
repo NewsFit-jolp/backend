@@ -85,7 +85,6 @@ public class ArticleService {
 
         try {
             recommenderUtils.registerArticle(article);
-
         }
         catch (JsonProcessingException e) {
             e.printStackTrace();
