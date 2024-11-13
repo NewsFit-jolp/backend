@@ -138,7 +138,7 @@ public class ArticleService {
                 .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
 
-        String content = (String) jsonObject.get("content");
+        String content = (String) jsonObject.get("comment");
 
         Comment comment = Comment.builder()
                 .member(member)
