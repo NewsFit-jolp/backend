@@ -345,5 +345,9 @@ public class ArticleService {
         }
         return getArticles;
     }
+
+    public String getTest(String articleId){
+        return articleRepository.findById(Long.parseLong(articleId)).get().toString();
+    }
 }
 
