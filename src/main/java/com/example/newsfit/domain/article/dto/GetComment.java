@@ -21,7 +21,7 @@ public record GetComment(
                 comment.getContent(),
                 comment.getMember().getNickname(),
                 comment.getLikeCount(),
-                comment.getCreatedDate(),
+                comment.getCreatedDate().toLocalDateTime(),
                 comment.getMember().getOAuthId().equals(memberId)
         );
     }
