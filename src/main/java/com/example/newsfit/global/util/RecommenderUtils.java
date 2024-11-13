@@ -27,21 +27,24 @@ public class RecommenderUtils {
     @Value("${recommender.endpoint}")
     private String recommenderEndpoint;
 
-    public void registerArticle(Article article) throws JsonProcessingException {
+    public void registerArticle(Article article) {
+        try {
+            JSONObject request = new JSONObject();
+            request.put("news_id", article.getArticleId());
+            request.put("category", article.getCategory().toString());
+            request.put("publisher", article.getPress().toString());
+            request.put("title", article.getTitle());
+            request.put("headLine", article.getTitle());
+            request.put("thumbnail", article.getImages().get(0));
+            request.put("publishDate", article.getPublishDate().toString());
 
-        JSONObject request = new JSONObject();
-        request.put("news_id", article.getArticleId());
-        request.put("category", article.getCategory().toString());
-        request.put("publisher", article.getPress().toString());
-        request.put("title", article.getTitle());
-        request.put("headLine", article.getTitle());
-        request.put("thumbnail", article.getImages().get(0));
-        request.put("publishDate", article.getPublishDate().toString());
+            String requestBody = request.toJSONString();
 
-        String requestBody = request.toJSONString();
-
-        requestRecommender(requestBody, "/new-news", HttpMethod.POST);
-
+            requestRecommender(requestBody, "/new-news", HttpMethod.POST);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void registerMember(Long memberId) throws JsonProcessingException {

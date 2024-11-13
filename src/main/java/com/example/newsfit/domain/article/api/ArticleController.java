@@ -3,6 +3,7 @@ package com.example.newsfit.domain.article.api;
 import com.example.newsfit.domain.article.dto.GetArticle;
 import com.example.newsfit.domain.article.dto.GetArticles;
 import com.example.newsfit.domain.article.dto.GetComment;
+import com.example.newsfit.domain.article.dto.PostArticleRequest;
 import com.example.newsfit.domain.article.service.ArticleService;
 import com.example.newsfit.global.response.SuccessResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,8 +27,8 @@ public class ArticleController {
                     뉴스를 등록하는 API입니다.
                     """)
     @PostMapping
-    public SuccessResponse<GetArticles> postArticle(@RequestBody String requestBody) throws ParseException {
-        return SuccessResponse.success(articleService.postArticle(requestBody));
+    public SuccessResponse<GetArticles> postArticle(@RequestBody PostArticleRequest postArticleRequest) {
+        return SuccessResponse.success(articleService.postArticle(postArticleRequest));
     }
 
     @Operation(summary = "뉴스 조회",

@@ -1,9 +1,6 @@
 package com.example.newsfit.domain.article.service;
 
-import com.example.newsfit.domain.article.dto.GetArticle;
-import com.example.newsfit.domain.article.dto.GetArticles;
-import com.example.newsfit.domain.article.dto.GetComment;
-import com.example.newsfit.domain.article.dto.LangChainRequest;
+import com.example.newsfit.domain.article.dto.*;
 import com.example.newsfit.domain.article.entity.*;
 import com.example.newsfit.domain.article.repository.*;
 import com.example.newsfit.domain.member.entity.Member;
@@ -53,43 +50,13 @@ public class ArticleService {
     @Value("${cloud.aws.lambda.langchain.endpoint}")
     private String langChainEndpoint;
 
-    public GetArticles postArticle(String requestBody) throws ParseException {
-        JSONObject jsonObject = jsonObjectParser(requestBody);
+    public GetArticles postArticle(PostArticleRequest postArticleRequest) {
 
-        String title = (String) jsonObject.get("title");
-        String content = (String) jsonObject.get("content");
-        Press press = Press.valueOf(((String) jsonObject.get("press")).toUpperCase());
-        Category category = Category.fromDisplayName((String) jsonObject.get("category"));
-        JSONArray imageArray = (JSONArray) jsonObject.get("image");
-        List<String> images = new ArrayList<>();
-        String articleSource = (String) jsonObject.get("articleSource");
-        LocalDateTime publishDate = LocalDateTime.parse((String) jsonObject.get("publishDate"));
-
-        if (imageArray != null) {
-            for (Object image : imageArray) {
-                images.add((String) image);
-            }
-        }
-
-        Article article = Article.builder()
-                .title(title)
-                .content(content)
-                .press(press)
-                .category(category)
-                .images(images)
-                .articleSource(articleSource)
-                .publishDate(publishDate)
-                .build();
+        Article article = postArticleRequest.toArticle();
 
         articleRepository.save(article);
 
-        try {
-            recommenderUtils.registerArticle(article);
-        }
-        catch (JsonProcessingException e) {
-            e.printStackTrace();
-            System.out.println("Failed to register article to recommender system.");
-        }
+        recommenderUtils.registerArticle(article);
 
         return GetArticles.of(article);
     }
