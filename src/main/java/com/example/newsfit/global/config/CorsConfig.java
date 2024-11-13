@@ -16,7 +16,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "https://daycarat.shop", "https://appleid.apple.com"));
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "https://daycarat.shop", "https://appleid.apple.com", "https://newsfit.site"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("*"));
