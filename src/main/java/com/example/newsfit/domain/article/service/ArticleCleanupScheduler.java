@@ -6,12 +6,12 @@ import com.example.newsfit.global.util.RecommenderUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
@@ -22,9 +22,9 @@ public class ArticleCleanupScheduler {
     private final ArticleRepository articleRepository;
     private final RecommenderUtils recommenderUtils;
 
-    @Scheduled(cron = "0 0 4 * * ?")
+    @Scheduled(cron = "0 0 4 * * ?", zone = "Asia/Seoul")
     public void cleanup() throws JsonProcessingException {
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        LocalDateTime yesterday = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).minusDays(1).toLocalDateTime();
         List<Article> oldArticles = articleRepository.findOldArticle(yesterday);
         for (Article oldArticle : oldArticles) {
             recommenderUtils.removeOldArticles(oldArticle.getArticleId());
