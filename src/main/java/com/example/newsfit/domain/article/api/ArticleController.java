@@ -169,11 +169,4 @@ public class ArticleController {
     public SuccessResponse<List<GetArticles>> getHeadLine() throws JsonProcessingException {
         return SuccessResponse.success(articleService.getHeadLine());
     }
-
-
-    @GetMapping("/test/{articleId}")
-    public String getArticleTest(@PathVariable("articleId") String articleId){
-        return articleService.getTest(articleId);
-
-    }
 }
