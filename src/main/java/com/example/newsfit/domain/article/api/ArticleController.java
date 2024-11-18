@@ -155,8 +155,9 @@ public class ArticleController {
                     """)
     @GetMapping("/recommend")
     public String recommendArticles(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                    @RequestParam(value = "pageSize", required = false, defaultValue = "5") int pageSize) throws JsonProcessingException {
-        return articleService.recommendArticles(page, pageSize);
+                                    @RequestParam(value = "pageSize", required = false, defaultValue = "5") int pageSize,
+                                    @RequestParam(value = "category", required = true) String category) throws JsonProcessingException {
+        return articleService.recommendArticles(page, pageSize, category);
     }
 
     @Operation(summary = "헤드라인 조회",

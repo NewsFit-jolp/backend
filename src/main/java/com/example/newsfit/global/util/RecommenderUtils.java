@@ -97,8 +97,8 @@ public class RecommenderUtils {
         return "success";
     }
 
-    public String recommendArticles(Long memberId, int page, int pageSize) throws JsonProcessingException {
-        String path = String.format("/recommend-news?userId=%d&page=%d&pageSize=%d", memberId, page, pageSize);
+    public String recommendArticles(Long memberId, int page, int pageSize, String category) throws JsonProcessingException {
+        String path = String.format("/recommend-news?userId=%d&page=%d&pageSize=%d&category=%s", memberId, page, pageSize, category);
         return requestRecommender("", path, HttpMethod.GET);
     }
 

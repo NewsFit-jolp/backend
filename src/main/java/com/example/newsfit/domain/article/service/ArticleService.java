@@ -324,11 +324,11 @@ public class ArticleService {
         return recommenderUtils.rateArticle(articleId, member.getId(), preference);
     }
 
-    public String recommendArticles(int page, int pageSize) throws JsonProcessingException {
+    public String recommendArticles(int page, int pageSize, String category) throws JsonProcessingException {
         Member member = memberRepository.findByOAuthId(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return recommenderUtils.recommendArticles(member.getId(), page, pageSize);
+        return recommenderUtils.recommendArticles(member.getId(), page, pageSize, category);
     }
 
     public List<GetArticles> getHeadLine() throws JsonProcessingException {
