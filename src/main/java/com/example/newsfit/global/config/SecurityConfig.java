@@ -47,6 +47,10 @@ public class SecurityConfig {
             "/articles/*/comments/**", "/articles/*/likes/**"
     };
 
+    private final String[] RecommendPatterns = {
+            "/articles/recommend"
+    };
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/member/token").permitAll() // 나중에 빼야함
                         .requestMatchers(MemberPatterns).authenticated()
                         .requestMatchers(CommentAndLike).authenticated()
+                        .requestMatchers(RecommendPatterns).authenticated()
                         .requestMatchers(HttpMethod.GET, ArticlePatterns).permitAll()
                         // .requestMatchers(ArticlePatterns).hasAuthority("ADMIN")
                         .anyRequest().permitAll()
